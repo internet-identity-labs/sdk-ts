@@ -11,5 +11,5 @@
     },
     "exclude": ["**/src/**/*.test.ts"],
     "include": ["env.d.ts"],
-    "references": [{ "path": "packages/core" }]
+    "references": [{ "path": "packages/credentials" }]
 }

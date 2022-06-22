@@ -2,29 +2,42 @@
 
 A Typescript SDK for the NFID credential system.
 
-## Core Package
+## Using The Credentials SDK
 
-Typescript methods to authenticate user credentials via zero knowledge proofs. Proof calls will often open a new window to the NFID dapp, which will perform authentication and return the proof back to your application. If a verification can be performed passively, no new window may be required.
+The credentials SDK exposes typescript methods to authenticate user credentials via zero knowledge proofs. Proof calls will often open a new window to the NFID dapp, which will perform authentication and return the proof back to your application. If a verification can be performed passively, no new window may be required.
 
-### `hasPhoneNumber (identity, config) : Promise<boolean>`
+### `requestPhoneNumberCredential () : Promise<CredentialResult>`
 
 Verify that the user has a phone number associated with their account.
 
-**Parameters**
-
--   Identity: the NFID user identity to authenticate (as anchor? as delegatoin chain? etc?)
--   Window configuration
-    -   Size?
-    -   Other?
--   Verification configuration
-    -   Freshness?
-    -   Other?
-
 **Returns**
 
-`Boolean`: true if the criteria of the verification call are met, otherwise false.
+`CredentialResult` - `result : boolean` true if the identity has an associated phone number - `credential : string` a hashed phone number
+
+**Note**
+
+The credential should be validated with our blackhole canister.
 
 ## Development Guidelines
+
+### Provider Example
+
+The SDK provides a hook for providers to handle credential requests, keeping the implementation details of returning data to the client out of provider implementations.
+
+```
+import { registerPhoneNumberCredentialHandler } from '@nfid/credentials';
+
+async function handler(): Promise<CredentialResult> {
+    return new Promise(resolve =>
+        setTimeout(
+            () => resolve({ result: true, credential: 'abcdefg' }),
+            3000
+        )
+    );
+}
+
+registerPhoneNumberCredentialHandler(handler);
+```
 
 ### Making Releases
 

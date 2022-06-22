@@ -3,7 +3,7 @@ import {
     requestPhoneNumberCredential,
     registerPhoneNumberCredentialHandler,
     CredentialResult,
-} from '@nfid/sdk/core';
+} from '@nfid/credentials';
 
 const app = document.querySelector<HTMLDivElement>('#app')!;
 

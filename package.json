@@ -49,7 +49,7 @@
     },
     "workspaces": {
         "packages": [
-            "packages/core",
+            "packages/credentials",
             "example"
         ]
     },
