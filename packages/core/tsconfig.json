@@ -1,0 +1,23 @@
+{
+    "extends": "../../tsconfig.json",
+    "compilerOptions": {
+        "baseUrl": "./",
+        "composite": true,
+        "declaration": true,
+        "esModuleInterop": true,
+        "forceConsistentCasingInFileNames": true,
+        "lib": ["dom", "es2017"],
+        "module": "ES2020",
+        "moduleResolution": "node",
+        "outDir": "./dist",
+        "paths": {
+            "@nfid/sdk/core": ["./src"]
+        },
+        "resolveJsonModule": true,
+        "rootDir": "./src",
+        "sourceMap": true,
+        "strict": true,
+        "target": "es2017"
+    },
+    "include": ["src/**/*.ts", "../../env.d.ts"]
+}

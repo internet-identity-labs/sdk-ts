@@ -1,0 +1,28 @@
+name: Release
+on:
+    push:
+        tags:
+            - 'v*'
+jobs:
+    test:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+            - uses: actions/setup-node@v3
+              with:
+                  node-version: 17
+            - run: npm i
+              env:
+                  NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+                  GH_TOKEN: ${{ secrets.GH_TOKEN }}
+            - run: npm t
+    release:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+            - name: Create a Release
+              uses: elgohr/Github-Release-Action@v4
+              env:
+                  GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+              with:
+                  title: ${{ github.event.head_commit.message }}

@@ -1,0 +1,4 @@
+node_modules
+dist
+canisters
+__mocks__

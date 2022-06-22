@@ -1,0 +1,63 @@
+{
+    "name": "@nfid/sdk",
+    "version": "0.0.1",
+    "description": "rough draft of the credential sdk for nfid",
+    "main": "index.ts",
+    "scripts": {
+        "build": "npm run build --workspaces --if-present",
+        "watch": "npm run watch --workspaces --if-present",
+        "test": "npm run test --workspaces --if-present",
+        "lint": "eslint --ext .js,.ts . --fix",
+        "format": "prettier --ignore-path .gitignore --write \"**/*.+(js|ts|json)\"",
+        "version": "ts-node bin/version.ts",
+        "postversion": "npm run format"
+    },
+    "author": "jorgenbuilder",
+    "license": "ISC",
+    "jest": {
+        "verbose": true,
+        "moduleNameMapper": {
+            "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/.mocks/fileMock.js",
+            "\\.css$": "identity-obj-proxy"
+        },
+        "transform": {
+            "^.+\\.tsx?$": "ts-jest"
+        },
+        "preset": "ts-jest",
+        "testEnvironment": "jsdom"
+    },
+    "ts-node": {
+        "swc": true,
+        "files": true,
+        "compilerOptions": {}
+    },
+    "devDependencies": {
+        "@swc/core": "^1.2.165",
+        "@swc/helpers": "^0.3.8",
+        "@types/jest": "^27.5.2",
+        "@types/luxon": "^2.3.2",
+        "@types/node": "^17.0.42",
+        "dotenv": "^16.0.1",
+        "envars": "^0.4.0",
+        "jest": "^27.5.1",
+        "prettier": "^2.7.0",
+        "rollup": "^2.75.7",
+        "ts-jest": "^27.1.4",
+        "ts-node": "^10.7.0",
+        "tslib": "^2.3.1",
+        "typescript": "^4.6.3"
+    },
+    "workspaces": {
+        "packages": [
+            "packages/core",
+            "example"
+        ]
+    },
+    "dependencies": {
+        "@supercharge/promise-pool": "^2.3.0",
+        "i": "^0.3.7",
+        "ic-stoic-identity": "^2.0.0",
+        "jotai": "^1.7.2",
+        "npm": "^8.12.2"
+    }
+}
