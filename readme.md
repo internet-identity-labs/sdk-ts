@@ -6,13 +6,23 @@ A Typescript SDK for the NFID credential system.
 
 The credentials SDK exposes typescript methods to authenticate user credentials via zero knowledge proofs. Proof calls will often open a new window to the NFID dapp, which will perform authentication and return the proof back to your application. If a verification can be performed passively, no new window may be required.
 
-### `requestPhoneNumberCredential () : Promise<CredentialResult>`
+### `requestPhoneNumberCredential (conf?: CredentialProviderConf) : Promise<CredentialResult>`
 
 Verify that the user has a phone number associated with their account.
 
+**Params**
+
+`CredentialProviderConf`
+
+-   `provider?: URL` url of the credential provider, defaults to `https://nfid.one/credential`
+-   `windowFeatures` string or object describing the popup window for the provider
+
 **Returns**
 
-`CredentialResult` - `result : boolean` true if the identity has an associated phone number - `credential : string` a hashed phone number
+`CredentialResult`
+
+-   `result : boolean` true if the identity has an associated phone number
+-   `credential : string` a hashed phone number
 
 **Note**
 
