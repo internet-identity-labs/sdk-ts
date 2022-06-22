@@ -1,7 +1,7 @@
 export * from './client';
 export * from './provider';
 
-export const provider = new URL(`${window.location.origin}/provider`);
+export const defaultProvider = new URL(`https://nfid.one/credential`);
 
 export function validateEventOrigin(
     event: MessageEvent,

@@ -38,7 +38,7 @@ export function createWindow(
  * New window options as object or string.
  * https://developer.mozilla.org/en-US/docs/Web/API/Window/open#parameters
  */
-interface WindowFeatures {
+export interface WindowFeatures {
     toolbar?: boolean;
     location?: boolean;
     menubar?: boolean;

@@ -1,5 +1,5 @@
-import { provider, validateEventOrigin } from '.';
-import { createWindow, postMessageToProvider } from '../window';
+import { defaultProvider, validateEventOrigin } from '.';
+import { createWindow, postMessageToProvider, WindowFeatures } from '../window';
 import { ProviderEvents } from './provider';
 
 export type ClientEvents = { kind: 'RequestPhoneNumberCredential' };
@@ -9,17 +9,28 @@ export interface CredentialResult {
     result: boolean;
 }
 
-let handler: (event: MessageEvent<ProviderEvents>) => void;
+export type CredentialProviderConf =
+    | {
+          windowFeatures?: WindowFeatures;
+          provider: URL;
+      }
+    | undefined;
 
-export async function requestPhoneNumberCredential(): Promise<CredentialResult> {
+export async function requestPhoneNumberCredential(
+    { provider, windowFeatures }: CredentialProviderConf = {
+        provider: defaultProvider,
+    }
+): Promise<CredentialResult> {
     return new Promise(resolve => {
-        handler = getHandler(resolve);
+        handler = getHandler(resolve, provider);
         window.addEventListener('message', handler);
-        createWindow(provider.toString());
+        createWindow(provider.toString(), windowFeatures);
     });
 }
 
-function getHandler(resolve: (x: CredentialResult) => void) {
+let handler: (event: MessageEvent<ProviderEvents>) => void;
+
+function getHandler(resolve: (x: CredentialResult) => void, provider: URL) {
     return function (event: MessageEvent<ProviderEvents>) {
         if (!validateEventOrigin(event, provider.origin)) return;
 

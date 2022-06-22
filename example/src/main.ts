@@ -24,7 +24,9 @@ async function Client() {
         button.onclick = async () => {
             button.disabled = true;
             button.innerText = 'Loading...';
-            const { credential, result } = await requestPhoneNumberCredential();
+            const { credential, result } = await requestPhoneNumberCredential({
+                provider: new URL(`${window.location.origin}/provider`),
+            });
             button.disabled = true;
             button.innerText = 'Complete!';
             app.append(`Result: ${result}, Credential: ${credential}`);

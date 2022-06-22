@@ -1,3 +1,3 @@
 # Phone Credentials Example
 
-[Live](#) Demonstrates client and provider implementations.
+[Live](https://nfid-sdk-ts.vercel.app) Demonstrates client and provider implementations.
