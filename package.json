@@ -1,7 +1,7 @@
 {
     "name": "@nfid/sdk",
-    "version": "0.0.1",
-    "description": "rough draft of the credential sdk for nfid",
+    "version": "0.0.2",
+    "description": "Typescript SDK for NFID",
     "main": "index.ts",
     "scripts": {
         "build": "npm run build --workspaces --if-present",
