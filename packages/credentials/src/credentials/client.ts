@@ -1,5 +1,10 @@
 import { defaultProvider, validateEventOrigin } from '.';
-import { createWindow, postMessageToProvider, WindowFeatures } from '../window';
+import {
+    createWindow,
+    done,
+    postMessageToProvider,
+    WindowFeatures,
+} from '../window';
 import { ProviderEvents } from './provider';
 
 export type ClientEvents = { kind: 'RequestPhoneNumberCredential' };
@@ -21,10 +26,13 @@ export async function requestPhoneNumberCredential(
         provider: defaultProvider,
     }
 ): Promise<CredentialResult> {
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
         handler = getHandler(resolve, provider);
         window.addEventListener('message', handler);
-        createWindow(provider.toString(), windowFeatures);
+        window.onbeforeunload = () => {
+            window.removeEventListener('message', handler);
+        };
+        createWindow(provider.toString(), reject, windowFeatures);
     });
 }
 
@@ -43,6 +51,7 @@ function getHandler(resolve: (x: CredentialResult) => void, provider: URL) {
             console.info('Credential flow is complete.');
             window.removeEventListener('message', handler);
             resolve(event.data.result);
+            done();
         }
     };
 }

@@ -18,20 +18,27 @@ async function Client() {
     <button>Request Credential</button>
   `;
 
-    const button = document.querySelector('button');
+    const button = document.querySelector('button') as HTMLButtonElement;
+    const message = document.querySelector('#message') as HTMLDivElement;
 
-    if (button) {
-        button.onclick = async () => {
-            button.disabled = true;
-            button.innerText = 'Loading...';
-            const { credential, result } = await requestPhoneNumberCredential({
-                provider: new URL(`${window.location.origin}/provider`),
+    button.onclick = () => {
+        button.disabled = true;
+        button.innerText = 'Loading...';
+        message.innerText = '';
+        requestPhoneNumberCredential({
+            provider: new URL(`${window.location.origin}/provider`),
+        })
+            .then(({ credential, result }) => {
+                button.innerText = 'Complete!';
+                message.innerText = `Result: ${result}, Credential: ${credential}`;
+            })
+            .catch(e => {
+                console.error(e);
+                button.disabled = false;
+                button.innerText = 'Request Credential';
+                message.innerText = `Problem getting credential: ${e}`;
             });
-            button.disabled = true;
-            button.innerText = 'Complete!';
-            app.append(`Result: ${result}, Credential: ${credential}`);
-        };
-    }
+    };
 }
 
 async function Provider() {

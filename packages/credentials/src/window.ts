@@ -15,9 +15,10 @@ const INTERRUPTION_CHECK_INTERVAL = 1000;
  */
 export function createWindow(
     url: string,
+    reject: (e: Error) => void,
     windowFeatures?: WindowFeatures | string
 ) {
-    // TODO: handle existing sessions
+    sdkWindow?.close();
     sdkWindow = window.open(
         url,
         'nfidSdk',
@@ -30,7 +31,13 @@ export function createWindow(
                   })
             : stringifyWindowFeatures(defaultWindowFeatures)
     );
-    function checkInteruption() {}
+    function checkInteruption() {
+        if (sdkWindow?.closed) {
+            reject(new Error(`Terminated by user.`));
+        } else {
+            setTimeout(checkInteruption, INTERRUPTION_CHECK_INTERVAL);
+        }
+    }
     setTimeout(checkInteruption, INTERRUPTION_CHECK_INTERVAL);
 }
 
@@ -91,4 +98,12 @@ export function postMessageToProvider(event: ClientEvents) {
  */
 export function postMessageToClient(event: ProviderEvents) {
     window.opener.postMessage(event);
+}
+
+/**
+ * Close the provider window.
+ */
+export function done() {
+    sdkWindow?.close();
+    sdkWindow = null;
 }
