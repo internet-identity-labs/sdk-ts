@@ -8,7 +8,7 @@
         "preview": "vite preview"
     },
     "dependencies": {
-        "@nfid/credentials": "../packages/credentials"
+        "@nfid/credentials": "^0.0.2"
     },
     "devDependencies": {
         "typescript": "^4.5.4",
