@@ -7,7 +7,8 @@
         "resolveJsonModule": true,
         "baseUrl": ".",
         "types": ["jest", "node"],
-        "skipLibCheck": true
+        "skipLibCheck": true,
+        "inlineSourceMap": true
     },
     "exclude": ["**/src/**/*.test.ts"],
     "include": ["env.d.ts"],
