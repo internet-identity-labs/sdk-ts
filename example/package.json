@@ -1,14 +1,14 @@
 {
     "name": "nfid-credential-example",
     "private": true,
-    "version": "0.0.9",
+    "version": "0.0.10",
     "scripts": {
         "dev": "vite",
         "build": "tsc && vite build",
         "preview": "vite preview"
     },
     "dependencies": {
-        "@nfid/credentials": "^0.0.2"
+        "@nfid/credentials": "0.0.10"
     },
     "devDependencies": {
         "typescript": "^4.5.4",
