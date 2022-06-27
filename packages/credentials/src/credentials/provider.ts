@@ -15,7 +15,7 @@ export function registerPhoneNumberCredentialHandler(
     window.addEventListener(
         'message',
         async (event: MessageEvent<ClientEvents>) => {
-            if (!validateEventOrigin(event, window.opener.origin)) return;
+            // if (!validateEventOrigin(event, window.opener.origin)) return;
 
             // We accept credential requests from the client
             if (event.data.kind === 'RequestPhoneNumberCredential') {

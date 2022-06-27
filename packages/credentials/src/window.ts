@@ -3,6 +3,7 @@ import { ProviderEvents } from './credentials/provider';
 
 /** A reference to the current nfid sdk window */
 let sdkWindow: Window | null;
+let origin: string | null;
 
 const INTERRUPTION_CHECK_INTERVAL = 1000;
 
@@ -18,6 +19,7 @@ export function createWindow(
     reject: (e: Error) => void,
     windowFeatures?: WindowFeatures | string
 ) {
+    origin = new URL(url).origin;
     sdkWindow?.close();
     sdkWindow = window.open(
         url,
@@ -89,7 +91,7 @@ export function stringifyWindowFeatures(options: WindowFeatures): string {
  * @param event {@link ClientEvents}
  */
 export function postMessageToProvider(event: ClientEvents) {
-    sdkWindow?.postMessage(event);
+    sdkWindow?.postMessage(event, origin as string);
 }
 
 /**
@@ -97,7 +99,7 @@ export function postMessageToProvider(event: ClientEvents) {
  * @param event {@link ProviderEvents}
  */
 export function postMessageToClient(event: ProviderEvents) {
-    window.opener.postMessage(event);
+    window.opener.postMessage(event, '*');
 }
 
 /**
