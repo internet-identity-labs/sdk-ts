@@ -1,3 +1,4 @@
+import { Principal } from '@dfinity/principal';
 import { defaultProvider, validateEventOrigin } from '.';
 import {
     createWindow,
@@ -10,8 +11,10 @@ import { ProviderEvents } from './provider';
 export type ClientEvents = { kind: 'RequestPhoneNumberCredential' };
 
 export interface CredentialResult {
-    credential: string;
-    result: boolean;
+    phoneNumber: string;
+    client: Principal;
+    domain: string;
+    createdDate: Date;
 }
 
 export type CredentialProviderConf =
