@@ -64,8 +64,8 @@ export const defaultWindowFeatures: WindowFeatures = {
     toolbar: false,
     location: false,
     menubar: false,
-    width: 500,
-    height: 500,
+    width: 625,
+    height: 705,
     top: 100,
     left: 100,
 };

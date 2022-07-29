@@ -8,6 +8,8 @@
         "preview": "vite preview"
     },
     "dependencies": {
+        "@dfinity/agent": "^0.12.2",
+        "@dfinity/auth-client": "^0.12.2",
         "@nfid/credentials": "0.0.10"
     },
     "devDependencies": {
