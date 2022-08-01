@@ -2,16 +2,52 @@ body {
     font-family: Avenir, Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    text-align: center;
     color: #2c3e50;
-    margin-top: 60px;
     display: flex;
     flex-flow: column;
+    place-items: center;
     gap: 20px;
+    padding: 60px;
+}
+
+.logo {
+    max-width: 120px;
+}
+
+.title {
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.subtitle {
+    margin-top: 38px;
+    font-size: 20px;
+}
+
+pre {
+    max-width: 44em;
+    overflow-x: auto;
+    background: #f5f5f5;
+    padding: 12px 8px;
+    border-radius: 10px;
+}
+
+pre:empty {
+    display: none;
+}
+
+pre.response {
+    color: #0000ff;
 }
 
 button {
-    font-size: 24px;
+    border-radius: 7px;
+    border: none;
+    font-size: 18px;
     padding: 12px 24px;
     cursor: pointer;
+}
+
+button:disabled {
+    cursor: default;
 }

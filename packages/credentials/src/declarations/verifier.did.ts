@@ -112,11 +112,7 @@ export const idlFactory: InterfaceFactory = ({ IDL }) => {
             [IDL.Opt(CanisterMetrics)],
             ['query']
         ),
-        is_phone_number_approved: IDL.Func(
-            [IDL.Text, IDL.Text],
-            [BoolHttpResponse],
-            []
-        ),
+        is_phone_number_approved: IDL.Func([IDL.Text], [BoolHttpResponse], []),
         resolve_token: IDL.Func(
             [IDL.Vec(IDL.Nat8)],
             [IDL.Opt(Certificate)],

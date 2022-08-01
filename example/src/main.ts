@@ -11,8 +11,6 @@ import { HttpAgent } from '@dfinity/agent';
 window.global = window;
 
 const app = document.querySelector<HTMLDivElement>('#app')!;
-let principal: string | undefined;
-let agent: HttpAgent | undefined;
 
 if (window.location.pathname.includes('provider')) {
     Provider();
@@ -21,16 +19,15 @@ if (window.location.pathname.includes('provider')) {
 }
 
 async function Client() {
-    app.innerHTML = `
-    <button id="auth">Authenticate</button>
-    <button id="credential" disabled=true>Request Credential</button>
-  `;
-
     const authButton = document.querySelector('#auth') as HTMLButtonElement;
     const credButton = document.querySelector(
         '#credential'
     ) as HTMLButtonElement;
-    const message = document.querySelector('#message') as HTMLDivElement;
+    const principal = document.querySelector('#principal') as HTMLDivElement;
+    const certificate = document.querySelector(
+        '#certificate'
+    ) as HTMLDivElement;
+    const verify = document.querySelector('#verify') as HTMLDivElement;
 
     authButton.onclick = async () => {
         const authClient = await AuthClient.create();
@@ -41,22 +38,22 @@ async function Client() {
                     identity,
                     host: 'https://ic0.app',
                 });
-                principal = identity.getPrincipal().toText();
                 authButton.disabled = true;
                 credButton.disabled = false;
-                message.innerText = `Principal: ${principal}`;
+                principal.innerText = `Principal: ${identity
+                    .getPrincipal()
+                    .toText()}`;
             },
             onError: error => {
                 console.error(error);
             },
-            identityProvider: 'https://nfid.dev/idp',
+            identityProvider: 'http://localhost:9090/idp',
         });
     };
 
     credButton.onclick = () => {
         credButton.disabled = true;
         credButton.innerText = 'Loading...';
-        message.innerText = '';
         requestPhoneNumberCredential({
             provider: new URL(
                 `http://localhost:9090/credential/verified-phone-number`
@@ -66,18 +63,17 @@ async function Client() {
                 width: 625,
             },
         })
-            .then(({ hashedPhoneNumber }) => {
+            .then(result => {
                 credButton.innerText = 'Complete!';
-                message.innerText = `Result: ${hashedPhoneNumber}`;
-                if (!principal) throw new Error('Missing principal');
-                return verifyPhoneNumberCredential(
-                    hashedPhoneNumber,
-                    principal
-                );
+                certificate.innerText = JSON.stringify(result, null, 2);
+                verify.innerText = 'Verifying credential...';
+                return result && result.phoneNumberSha2
+                    ? verifyPhoneNumberCredential(result.clientPrincipal)
+                    : undefined;
             })
             .then(
                 r =>
-                    (message.innerText = r
+                    (verify.innerText = r
                         ? 'Phone number verified!'
                         : 'Could not verify credential.')
             )
@@ -85,7 +81,7 @@ async function Client() {
                 console.error(e);
                 credButton.disabled = false;
                 credButton.innerText = 'Request Credential';
-                message.innerText = `Problem getting credential: ${e}`;
+                verify.innerText = `Problem getting credential: ${e}`;
             });
     };
 }
@@ -100,8 +96,10 @@ async function Provider() {
             setTimeout(
                 () =>
                     resolve({
-                        hashedPhoneNumber: 'abcdef123456',
+                        clientPrincipal: 'aaaaa-aaa',
+                        phoneNumberSha2: 'abcdef123456',
                         createdDate: new Date(),
+                        domain: 'dscvr.one',
                     }),
                 3000
             )

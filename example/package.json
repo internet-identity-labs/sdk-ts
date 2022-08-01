@@ -1,7 +1,7 @@
 {
     "name": "nfid-credential-example",
     "private": true,
-    "version": "0.0.10",
+    "version": "0.0.11",
     "scripts": {
         "dev": "vite",
         "build": "tsc && vite build",
@@ -10,7 +10,7 @@
     "dependencies": {
         "@dfinity/agent": "^0.12.2",
         "@dfinity/auth-client": "^0.12.2",
-        "@nfid/credentials": "0.0.10"
+        "@nfid/credentials": "0.0.11"
     },
     "devDependencies": {
         "typescript": "^4.5.4",

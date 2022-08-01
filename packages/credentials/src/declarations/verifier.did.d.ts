@@ -1,5 +1,5 @@
-import type { ActorMethod } from '@dfinity/agent';
 import type { Principal } from '@dfinity/principal';
+import type { ActorMethod } from '@dfinity/agent';
 
 export interface BoolHttpResponse {
     data: [] | [boolean];
@@ -110,6 +110,6 @@ export interface _SERVICE {
         [GetMetricsParameters],
         [] | [CanisterMetrics]
     >;
-    is_phone_number_approved: ActorMethod<[string, string], BoolHttpResponse>;
+    is_phone_number_approved: ActorMethod<[string], BoolHttpResponse>;
     resolve_token: ActorMethod<[Array<number>], [] | [Certificate]>;
 }
