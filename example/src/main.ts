@@ -47,7 +47,7 @@ async function Client() {
             onError: error => {
                 console.error(error);
             },
-            identityProvider: 'http://localhost:9090/idp',
+            identityProvider: 'https://nfid.dev/authenticate',
         });
     };
 
@@ -56,7 +56,7 @@ async function Client() {
         credButton.innerText = 'Loading...';
         requestPhoneNumberCredential({
             provider: new URL(
-                `http://localhost:9090/credential/verified-phone-number`
+                `https://nfid.dev/credential/verified-phone-number`
             ),
             windowFeatures: {
                 height: 705,
