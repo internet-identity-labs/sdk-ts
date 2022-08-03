@@ -7,6 +7,7 @@
         "build": "npm run build --workspaces --if-present",
         "watch": "npm run watch --workspaces --if-present",
         "test": "npm run test --workspaces --if-present",
+        "test:watch": "npm run test:watch --workspaces --if-present",
         "lint": "eslint --ext .js,.ts . --fix",
         "format": "prettier --ignore-path .gitignore --write \"**/*.+(js|ts|json)\"",
         "version": "ts-node bin/version.ts",

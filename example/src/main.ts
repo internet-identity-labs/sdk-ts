@@ -7,10 +7,12 @@ import {
 } from '@nfid/credentials';
 import { AuthClient } from '@dfinity/auth-client';
 import { HttpAgent } from '@dfinity/agent';
+import { DelegationIdentity } from '@dfinity/identity';
 
 window.global = window;
 
 const app = document.querySelector<HTMLDivElement>('#app')!;
+let identity: DelegationIdentity;
 
 if (window.location.pathname.includes('provider')) {
     Provider();
@@ -31,9 +33,10 @@ async function Client() {
 
     authButton.onclick = async () => {
         const authClient = await AuthClient.create();
+        console.log(`${import.meta.env.VITE_NFID_HOST}/authenticate`);
         await authClient.login({
             onSuccess: () => {
-                const identity = authClient.getIdentity();
+                identity = authClient.getIdentity() as DelegationIdentity;
                 (window as any).ic.agent = new HttpAgent({
                     identity,
                     host: 'https://ic0.app',
@@ -47,16 +50,19 @@ async function Client() {
             onError: error => {
                 console.error(error);
             },
-            identityProvider: 'https://nfid.dev/authenticate',
+            identityProvider: `${import.meta.env.VITE_NFID_HOST}/authenticate`,
+            windowOpenerFeatures: `toolbar=0,location=0,menubar=0,width=625,height=705`,
         });
     };
 
     credButton.onclick = () => {
         credButton.disabled = true;
         credButton.innerText = 'Loading...';
-        requestPhoneNumberCredential({
+        requestPhoneNumberCredential(identity, {
             provider: new URL(
-                `https://nfid.dev/credential/verified-phone-number`
+                `${
+                    import.meta.env.VITE_NFID_HOST
+                }/credential/verified-phone-number`
             ),
             windowFeatures: {
                 height: 705,
@@ -81,7 +87,7 @@ async function Client() {
                 console.error(e);
                 credButton.disabled = false;
                 credButton.innerText = 'Request Credential';
-                verify.innerText = `Problem getting credential: ${e}`;
+                certificate.innerText = `Problem getting credential: ${e}`;
             });
     };
 }

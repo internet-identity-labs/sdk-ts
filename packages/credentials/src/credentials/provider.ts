@@ -15,7 +15,7 @@ export type ProviderEvents =
 export function registerPhoneNumberCredentialHandler(
     handler: () => Promise<CredentialResult | undefined>
 ) {
-    const p = new Promise<string>(res => {
+    const p = new Promise<number[]>(res => {
         window.addEventListener(
             'message',
             async (event: MessageEvent<ClientEvents>) => {
@@ -23,7 +23,7 @@ export function registerPhoneNumberCredentialHandler(
 
                 // We accept credential requests from the client
                 if (event.data.kind === 'RequestPhoneNumberCredential') {
-                    res(event.data.hostname);
+                    res(event.data.token);
                     console.info(
                         `Phone number credential request received, triggering handler.`,
                         event

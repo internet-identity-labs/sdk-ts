@@ -1,4 +1,5 @@
-import { Actor } from '@dfinity/agent';
+import { Actor, HttpAgent } from '@dfinity/agent';
+import { DelegationIdentity } from '@dfinity/identity';
 import { defaultProvider, validateEventOrigin } from '.';
 import {
     createWindow,
@@ -9,10 +10,11 @@ import {
 import { ProviderEvents } from './provider';
 import { _SERVICE as Verifier } from '../declarations/verifier.did.d';
 import { idlFactory as verifierIDL } from '../declarations/verifier.did';
+import { getPersonaDomain } from '../common';
 
 export type ClientEvents = {
     kind: 'RequestPhoneNumberCredential';
-    hostname: string;
+    token: number[];
 };
 
 export interface CredentialResult {
@@ -32,12 +34,13 @@ export type CredentialProviderConf =
 const VERIFIER_CANISTER_ID = 'gzqxf-kqaaa-aaaak-qakba-cai';
 
 export async function requestPhoneNumberCredential(
+    identity: DelegationIdentity,
     { provider, windowFeatures }: CredentialProviderConf = {
         provider: defaultProvider,
     }
 ): Promise<CredentialResult | undefined> {
-    return new Promise((resolve, reject) => {
-        handler = getHandler(resolve, provider);
+    return new Promise(async (resolve, reject) => {
+        handler = await getHandler(resolve, provider, identity);
         window.addEventListener('message', handler);
         window.onbeforeunload = () => {
             window.removeEventListener('message', handler);
@@ -64,18 +67,28 @@ export async function verifyPhoneNumberCredential(ownerPrincipal: string) {
 
 let handler: (event: MessageEvent<ProviderEvents>) => void;
 
-function getHandler(
+async function getHandler(
     resolve: (x: CredentialResult | undefined) => void,
-    provider: URL
+    provider: URL,
+    identity: DelegationIdentity
 ) {
-    return function (event: MessageEvent<ProviderEvents>) {
+    return async function (event: MessageEvent<ProviderEvents>) {
         if (!validateEventOrigin(event, provider.origin)) return;
 
         if (event.data.kind === 'Ready') {
+            console.info(
+                'Creating certificate with app delegation to await resolution from NFID delegation.'
+            );
+            const token = await Actor.createActor<Verifier>(verifierIDL, {
+                canisterId: VERIFIER_CANISTER_ID,
+                agent: new HttpAgent({ identity, host: 'https://ic0.app' }),
+            })
+                .generate_pn_token(getPersonaDomain(window.location))
+                .then(r => Array.from(r));
             console.info('Credential provider is ready, request credential.');
             postMessageToProvider({
                 kind: 'RequestPhoneNumberCredential',
-                hostname: `${window.location.protocol}//${window.location.host}`,
+                token,
             });
         }
 
