@@ -37,6 +37,7 @@ async function Client() {
         await authClient.login({
             onSuccess: () => {
                 identity = authClient.getIdentity() as DelegationIdentity;
+                if (!(window as any).ic) (window as any).ic = {};
                 (window as any).ic.agent = new HttpAgent({
                     identity,
                     host: 'https://ic0.app',
