@@ -6,7 +6,7 @@ describe('Window features stringifier', () => {
     });
     it('Correctly stringifies default features', () => {
         expect(stringifyWindowFeatures(defaultWindowFeatures)).toEqual(
-            'toolbar=0,location=0,menubar=0,width=625,height=705,top=100,left=100,'
+            'height=705,width=525,top=-352.5,left=-262.5,toolbar=0,location=0,menubar=0,'
         );
     });
 });

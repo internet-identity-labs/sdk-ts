@@ -52,24 +52,14 @@ async function Client() {
                 console.error(error);
             },
             identityProvider: `${import.meta.env.VITE_NFID_HOST}/authenticate`,
-            windowOpenerFeatures: `toolbar=0,location=0,menubar=0,width=625,height=705`,
+            windowOpenerFeatures: `toolbar=0,location=0,menubar=0,width=525,height=705`,
         });
     };
 
     credButton.onclick = () => {
         credButton.disabled = true;
         credButton.innerText = 'Loading...';
-        requestPhoneNumberCredential(identity, {
-            windowFeatures: {
-                height: 705,
-                width: 525,
-                top: window.screen.height / 2 - 705 / 2,
-                left: window.screen.width / 2 - 525 / 2,
-                toolbar: false,
-                location: false,
-                menubar: false,
-            },
-        })
+        requestPhoneNumberCredential(identity)
             .then(result => {
                 credButton.innerText = 'Complete!';
                 certificate.innerText = JSON.stringify(result, null, 2);

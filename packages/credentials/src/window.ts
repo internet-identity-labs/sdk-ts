@@ -60,14 +60,14 @@ export interface WindowFeatures {
 /**
  * Default configuration for the sdk window.
  */
-export const defaultWindowFeatures: WindowFeatures = {
+export const defaultWindowFeatures = {
+    height: 705,
+    width: 525,
+    top: window.screen.height / 2 - 705 / 2,
+    left: window.screen.width / 2 - 525 / 2,
     toolbar: false,
     location: false,
     menubar: false,
-    width: 625,
-    height: 705,
-    top: 100,
-    left: 100,
 };
 
 /**

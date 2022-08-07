@@ -3,6 +3,7 @@ import { DelegationIdentity } from '@dfinity/identity';
 import { defaultProvider, validateEventOrigin } from '.';
 import {
     createWindow,
+    defaultWindowFeatures,
     done,
     postMessageToProvider,
     WindowFeatures,
@@ -36,7 +37,7 @@ export async function requestPhoneNumberCredential(
     config?: CredentialProviderConf
 ): Promise<CredentialResult | undefined> {
     const provider = config?.provider || defaultProvider;
-    const windowFeatures = config?.windowFeatures;
+    const windowFeatures = config?.windowFeatures || defaultWindowFeatures;
     return new Promise(async (resolve, reject) => {
         handler = await getHandler(resolve, provider, identity);
         window.addEventListener('message', handler);
