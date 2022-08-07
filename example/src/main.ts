@@ -60,14 +60,14 @@ async function Client() {
         credButton.disabled = true;
         credButton.innerText = 'Loading...';
         requestPhoneNumberCredential(identity, {
-            provider: new URL(
-                `${
-                    import.meta.env.VITE_NFID_HOST
-                }/credential/verified-phone-number`
-            ),
             windowFeatures: {
                 height: 705,
-                width: 625,
+                width: 525,
+                top: window.screen.height / 2 - 705 / 2,
+                left: window.screen.width / 2 - 525 / 2,
+                toolbar: false,
+                location: false,
+                menubar: false,
             },
         })
             .then(result => {

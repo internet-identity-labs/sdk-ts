@@ -24,21 +24,19 @@ export interface CredentialResult {
     createdDate: Date;
 }
 
-export type CredentialProviderConf =
-    | {
-          windowFeatures?: WindowFeatures;
-          provider: URL;
-      }
-    | undefined;
+export type CredentialProviderConf = {
+    windowFeatures?: WindowFeatures;
+    provider?: URL;
+};
 
 const VERIFIER_CANISTER_ID = 'gzqxf-kqaaa-aaaak-qakba-cai';
 
 export async function requestPhoneNumberCredential(
     identity: DelegationIdentity,
-    { provider, windowFeatures }: CredentialProviderConf = {
-        provider: defaultProvider,
-    }
+    config?: CredentialProviderConf
 ): Promise<CredentialResult | undefined> {
+    const provider = config?.provider || defaultProvider;
+    const windowFeatures = config?.windowFeatures;
     return new Promise(async (resolve, reject) => {
         handler = await getHandler(resolve, provider, identity);
         window.addEventListener('message', handler);
