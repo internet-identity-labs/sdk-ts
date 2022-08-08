@@ -59,7 +59,13 @@ async function Client() {
     credButton.onclick = () => {
         credButton.disabled = true;
         credButton.innerText = 'Loading...';
-        requestPhoneNumberCredential(identity)
+        requestPhoneNumberCredential(identity, {
+            provider: new URL(
+                `${
+                    import.meta.env.VITE_NFID_HOST
+                }/credential/verified-phone-number`
+            ),
+        })
             .then(result => {
                 credButton.innerText = 'Complete!';
                 certificate.innerText = JSON.stringify(result, null, 2);
