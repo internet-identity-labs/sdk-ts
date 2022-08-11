@@ -30,7 +30,9 @@ export type CredentialProviderConf = {
     provider?: URL;
 };
 
-const VERIFIER_CANISTER_ID = 'gzqxf-kqaaa-aaaak-qakba-cai';
+// const VERIFIER_CANISTER_ID_DEV = 'gzqxf-kqaaa-aaaak-qakba-cai';
+const VERIFIER_CANISTER_ID_PROD = 'sgk26-7yaaa-aaaan-qaovq-cai';
+const VERIFIER_CANISTER_ID = VERIFIER_CANISTER_ID_PROD;
 
 export async function requestPhoneNumberCredential(
     identity: DelegationIdentity,
