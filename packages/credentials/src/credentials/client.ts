@@ -26,11 +26,12 @@ export type CredentialResult =
 export type CredentialProviderConf = {
     windowFeatures?: WindowFeatures;
     provider?: URL;
+    verifier?: string; 
 };
 
-// const VERIFIER_CANISTER_ID_DEV = 'gzqxf-kqaaa-aaaak-qakba-cai';
-const VERIFIER_CANISTER_ID_PROD = 'sgk26-7yaaa-aaaan-qaovq-cai';
-const VERIFIER_CANISTER_ID = VERIFIER_CANISTER_ID_PROD;
+export const VERIFIER_CANISTER_ID_DEV = 'gzqxf-kqaaa-aaaak-qakba-cai';
+export const VERIFIER_CANISTER_ID_PROD = 'sgk26-7yaaa-aaaan-qaovq-cai';
+const defaultVerifier = VERIFIER_CANISTER_ID_PROD;
 
 export async function requestPhoneNumberCredential(
     identity: DelegationIdentity,
@@ -38,8 +39,9 @@ export async function requestPhoneNumberCredential(
 ): Promise<CredentialResult> {
     const provider = config?.provider || defaultProvider;
     const windowFeatures = config?.windowFeatures || defaultWindowFeatures;
+    const verifier = config?.verifier || defaultVerifier;
     return new Promise(async resolve => {
-        handler = await getHandler(resolve, provider, identity);
+        handler = await getHandler(resolve, provider, verifier, identity);
         window.addEventListener('message', handler);
         window.onbeforeunload = () => {
             window.removeEventListener('message', handler);
@@ -56,15 +58,15 @@ export async function requestPhoneNumberCredential(
     });
 }
 
-export async function verifyPhoneNumberCredential(ownerPrincipal: string) {
+export async function verifyPhoneNumberCredential(ownerPrincipal: string, verifier: string = defaultVerifier) {
     console.debug(verifyPhoneNumberCredential.name, {
         ownerPrincipal,
-        VERIFIER_CANISTER_ID,
+        verifier,
     });
-    const verifier = Actor.createActor<Verifier>(verifierIDL, {
-        canisterId: VERIFIER_CANISTER_ID,
+    const actor = Actor.createActor<Verifier>(verifierIDL, {
+        canisterId: verifier,
     });
-    const result = await verifier.is_phone_number_approved(ownerPrincipal);
+    const result = await actor.is_phone_number_approved(ownerPrincipal);
     console.debug(verifyPhoneNumberCredential.name, {
         ownerPrincipal,
         result,
@@ -77,7 +79,8 @@ let handler: (event: MessageEvent<ProviderEvents>) => void;
 async function getHandler(
     resolve: (x: CredentialResult) => void,
     provider: URL,
-    identity: DelegationIdentity
+    verifier: string,
+    identity: DelegationIdentity,
 ) {
     return async function (event: MessageEvent<ProviderEvents>) {
         if (!validateEventOrigin(event, provider.origin)) return;
@@ -87,7 +90,7 @@ async function getHandler(
                 'Creating certificate with app delegation to await resolution from NFID delegation.'
             );
             const token = await Actor.createActor<Verifier>(verifierIDL, {
-                canisterId: VERIFIER_CANISTER_ID,
+                canisterId: verifier,
                 agent: new HttpAgent({ identity, host: 'https://ic0.app' }),
             })
                 .generate_pn_token(getPersonaDomain(window.location))
