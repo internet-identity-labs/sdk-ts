@@ -9,11 +9,11 @@ export type ProviderEvents =
     | { kind: 'Ready' }
     | {
           kind: 'PhoneNumberCredentialResponse';
-          result: CredentialResult | undefined;
+          result: CredentialResult;
       };
 
 export function registerPhoneNumberCredentialHandler(
-    handler: () => Promise<CredentialResult | undefined>
+    handler: () => Promise<CredentialResult>
 ) {
     const p = new Promise<number[]>(res => {
         window.addEventListener(

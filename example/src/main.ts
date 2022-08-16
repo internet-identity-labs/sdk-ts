@@ -2,8 +2,6 @@ import './style.css';
 import {
     requestPhoneNumberCredential,
     verifyPhoneNumberCredential,
-    registerPhoneNumberCredentialHandler,
-    CredentialResult,
 } from '@nfid/credentials';
 import { AuthClient } from '@dfinity/auth-client';
 import { HttpAgent } from '@dfinity/agent';
@@ -11,14 +9,9 @@ import { DelegationIdentity } from '@dfinity/identity';
 
 window.global = window;
 
-const app = document.querySelector<HTMLDivElement>('#app')!;
 let identity: DelegationIdentity;
 
-if (window.location.pathname.includes('provider')) {
-    Provider();
-} else {
-    Client();
-}
+Client();
 
 async function Client() {
     const authButton = document.querySelector('#auth') as HTMLButtonElement;
@@ -65,14 +58,21 @@ async function Client() {
                     import.meta.env.VITE_NFID_HOST
                 }/credential/verified-phone-number`
             ),
+            verifier: import.meta.env.VITE_VERIFIER_CANISTER_ID
         })
             .then(result => {
-                credButton.innerText = 'Complete!';
                 certificate.innerText = JSON.stringify(result, null, 2);
-                verify.innerText = 'Verifying credential...';
-                return result && result.phoneNumberSha2
-                    ? verifyPhoneNumberCredential(result.clientPrincipal)
-                    : undefined;
+                if (result.status === 'SUCCESS') {
+                    credButton.innerText = 'Complete!';
+                    verify.innerText = 'Verifying credential...';
+                    return verifyPhoneNumberCredential(
+                        identity.getPrincipal().toText()
+                    );
+                } else {
+                    credButton.disabled = false;
+                    credButton.innerText = 'Request Credential';
+                    return undefined;
+                }
             })
             .then(
                 r =>
@@ -87,26 +87,4 @@ async function Client() {
                 certificate.innerText = `Problem getting credential: ${e}`;
             });
     };
-}
-
-async function Provider() {
-    app.innerHTML = `
-    <h1>Provider</h1>
-    <p>Doing credential magic..</p>
-    `;
-    async function handler(): Promise<CredentialResult> {
-        return new Promise(resolve =>
-            setTimeout(
-                () =>
-                    resolve({
-                        clientPrincipal: 'aaaaa-aaa',
-                        phoneNumberSha2: 'abcdef123456',
-                        createdDate: new Date(),
-                        domain: 'dscvr.one',
-                    }),
-                3000
-            )
-        );
-    }
-    registerPhoneNumberCredentialHandler(handler);
 }
