@@ -18,12 +18,10 @@ export type ClientEvents = {
     token: number[];
 };
 
-export interface CredentialResult {
-    domain: string;
-    clientPrincipal: string;
-    phoneNumberSha2?: string;
-    createdDate: Date;
-}
+export type CredentialResult =
+    | { status: 'SUCCESS' }
+    | { status: 'REJECTED'; message: string }
+    | { status: 'ERROR'; message: string };
 
 export type CredentialProviderConf = {
     windowFeatures?: WindowFeatures;
@@ -37,16 +35,24 @@ const VERIFIER_CANISTER_ID = VERIFIER_CANISTER_ID_PROD;
 export async function requestPhoneNumberCredential(
     identity: DelegationIdentity,
     config?: CredentialProviderConf
-): Promise<CredentialResult | undefined> {
+): Promise<CredentialResult> {
     const provider = config?.provider || defaultProvider;
     const windowFeatures = config?.windowFeatures || defaultWindowFeatures;
-    return new Promise(async (resolve, reject) => {
+    return new Promise(async resolve => {
         handler = await getHandler(resolve, provider, identity);
         window.addEventListener('message', handler);
         window.onbeforeunload = () => {
             window.removeEventListener('message', handler);
         };
-        createWindow(provider.toString(), reject, windowFeatures);
+        createWindow(
+            provider.toString(),
+            () =>
+                resolve({
+                    status: 'ERROR',
+                    message: 'Terminated by user',
+                }),
+            windowFeatures
+        );
     });
 }
 
@@ -69,7 +75,7 @@ export async function verifyPhoneNumberCredential(ownerPrincipal: string) {
 let handler: (event: MessageEvent<ProviderEvents>) => void;
 
 async function getHandler(
-    resolve: (x: CredentialResult | undefined) => void,
+    resolve: (x: CredentialResult) => void,
     provider: URL,
     identity: DelegationIdentity
 ) {
