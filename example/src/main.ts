@@ -66,7 +66,8 @@ async function Client() {
                     credButton.innerText = 'Complete!';
                     verify.innerText = 'Verifying credential...';
                     return verifyPhoneNumberCredential(
-                        identity.getPrincipal().toText()
+                        identity.getPrincipal().toText(),
+                        import.meta.env.VITE_VERIFIER_CANISTER_ID
                     );
                 } else {
                     credButton.disabled = false;
