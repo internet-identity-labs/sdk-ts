@@ -58,7 +58,7 @@ async function Client() {
                     import.meta.env.VITE_NFID_HOST
                 }/credential/verified-phone-number`
             ),
-            verifier: import.meta.env.VITE_VERIFIER_CANISTER_ID
+            verifier: import.meta.env.VITE_VERIFIER_CANISTER_ID,
         })
             .then(result => {
                 certificate.innerText = JSON.stringify(result, null, 2);

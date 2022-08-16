@@ -1,11 +1,12 @@
 {
     "name": "@nfid/sdk",
-    "version": "1.0.3",
+    "version": "1.1.0",
     "description": "Typescript SDK for NFID",
     "main": "index.ts",
     "scripts": {
         "build": "npm run build --workspaces --if-present",
         "watch": "npm run watch --workspaces --if-present",
+        "pretty": "npm run pretty --workspaces --if-present",
         "test": "npm run test --workspaces --if-present",
         "test:watch": "npm run test:watch --workspaces --if-present",
         "lint": "eslint --ext .js,.ts . --fix",

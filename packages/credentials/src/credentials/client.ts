@@ -26,7 +26,7 @@ export type CredentialResult =
 export type CredentialProviderConf = {
     windowFeatures?: WindowFeatures;
     provider?: URL;
-    verifier?: string; 
+    verifier?: string;
 };
 
 export const VERIFIER_CANISTER_ID_DEV = 'gzqxf-kqaaa-aaaak-qakba-cai';
@@ -58,7 +58,10 @@ export async function requestPhoneNumberCredential(
     });
 }
 
-export async function verifyPhoneNumberCredential(ownerPrincipal: string, verifier: string = defaultVerifier) {
+export async function verifyPhoneNumberCredential(
+    ownerPrincipal: string,
+    verifier: string = defaultVerifier
+) {
     console.debug(verifyPhoneNumberCredential.name, {
         ownerPrincipal,
         verifier,
@@ -80,7 +83,7 @@ async function getHandler(
     resolve: (x: CredentialResult) => void,
     provider: URL,
     verifier: string,
-    identity: DelegationIdentity,
+    identity: DelegationIdentity
 ) {
     return async function (event: MessageEvent<ProviderEvents>) {
         if (!validateEventOrigin(event, provider.origin)) return;
