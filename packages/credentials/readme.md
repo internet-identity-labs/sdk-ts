@@ -49,7 +49,7 @@ sequenceDiagram
     participant NFID Frontend
     participant Verifier
 
-    Your App->>NFID Frontend: requestPhoneNumberCredential()
+    Your App->>NFID Frontend: requestPhoneNumberCredential(identity)
     note over NFID Frontend: ...Credential Flow...
     NFID Frontend->>Your App: Credential
     Your App->>Your App (BE): verifyPhoneNumberCredential(principal)
