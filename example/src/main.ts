@@ -61,6 +61,7 @@ async function Client() {
             verifier: import.meta.env.VITE_VERIFIER_CANISTER_ID,
         })
             .then(result => {
+                console.debug('Client credButton.onclick', { result });
                 certificate.innerText = JSON.stringify(result, null, 2);
                 if (result.status === 'SUCCESS') {
                     credButton.innerText = 'Complete!';
