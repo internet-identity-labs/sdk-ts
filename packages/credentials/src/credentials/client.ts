@@ -1,12 +1,13 @@
 import { Actor, HttpAgent } from '@dfinity/agent';
 import { DelegationIdentity } from '@dfinity/identity';
-import { defaultProvider, validateEventOrigin } from '.';
+import { defaultProvider } from '.';
 import {
   createWindow,
   defaultWindowFeatures,
   done,
   NFIDProviderConf,
   postMessageToProvider,
+  validateEventOrigin,
 } from '@nfid/core';
 import { ProviderEvents } from './provider';
 import { _SERVICE as Verifier } from '../declarations/verifier.did.d';
