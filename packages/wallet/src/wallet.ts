@@ -5,7 +5,6 @@ import {
   NFIDProviderConf,
   postMessageToProvider,
 } from '@nfid/core';
-// FIXME: wrong location
 import { validateEventOrigin } from '@nfid/core';
 import { defaultProvider } from './default-provider';
 
