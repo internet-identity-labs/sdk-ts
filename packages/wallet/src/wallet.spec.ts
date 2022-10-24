@@ -7,7 +7,12 @@ import {
 } from '@nfid/core';
 import { defaultProvider } from './default-provider';
 
-jest.mock('@nfid/core');
+jest.mock('@nfid/core', () => ({
+  createWindow: jest.fn(),
+  validateEventOrigin: jest.fn().mockImplementation(() => true),
+  postMessageToProvider: jest.fn(),
+  done: jest.fn(),
+}));
 
 describe('wallet', () => {
   describe('requestTransfer', () => {
