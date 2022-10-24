@@ -1,0 +1,21 @@
+{
+  "name": "nfid-phone-number-verification",
+  "private": true,
+  "version": "1.1.1",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "pretty": "npx prettier --write \"**/*.ts(x)?\""
+  },
+  "dependencies": {
+    "@dfinity/agent": "^0.11.3",
+    "@dfinity/auth-client": "^0.11.3",
+    "@dfinity/authentication": "0.14.0",
+    "@nfid/credentials": "*"
+  },
+  "devDependencies": {
+    "typescript": "^4.5.4",
+    "vite": "^2.9.9"
+  }
+}

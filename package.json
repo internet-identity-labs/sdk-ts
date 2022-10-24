@@ -1,65 +1,50 @@
 {
-    "name": "@nfid/sdk",
-    "version": "1.1.1",
-    "description": "Typescript SDK for NFID",
-    "main": "index.ts",
-    "scripts": {
-        "build": "npm run build --workspaces --if-present",
-        "watch": "npm run watch --workspaces --if-present",
-        "pretty": "npm run pretty --workspaces --if-present",
-        "test": "npm run test --workspaces --if-present",
-        "test:watch": "npm run test:watch --workspaces --if-present",
-        "lint": "eslint --ext .js,.ts . --fix",
-        "format": "prettier --ignore-path .gitignore --write \"**/*.+(js|ts|json)\"",
-        "version": "ts-node bin/version.ts",
-        "postversion": "npm run format"
-    },
-    "author": "jorgenbuilder",
-    "license": "ISC",
-    "jest": {
-        "verbose": true,
-        "moduleNameMapper": {
-            "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/.mocks/fileMock.js",
-            "\\.css$": "identity-obj-proxy"
-        },
-        "transform": {
-            "^.+\\.tsx?$": "ts-jest"
-        },
-        "preset": "ts-jest",
-        "testEnvironment": "jsdom"
-    },
-    "ts-node": {
-        "swc": true,
-        "files": true,
-        "compilerOptions": {}
-    },
-    "devDependencies": {
-        "@swc/core": "^1.2.165",
-        "@swc/helpers": "^0.3.8",
-        "@types/jest": "^27.5.2",
-        "@types/luxon": "^2.3.2",
-        "@types/node": "^17.0.42",
-        "dotenv": "^16.0.1",
-        "envars": "^0.4.0",
-        "jest": "^27.5.1",
-        "prettier": "^2.7.0",
-        "rollup": "^2.75.7",
-        "ts-jest": "^27.1.4",
-        "ts-node": "^10.7.0",
-        "tslib": "^2.3.1",
-        "typescript": "^4.6.3"
-    },
-    "workspaces": {
-        "packages": [
-            "packages/credentials",
-            "example"
-        ]
-    },
-    "dependencies": {
-        "@supercharge/promise-pool": "^2.3.0",
-        "i": "^0.3.7",
-        "ic-stoic-identity": "^2.0.0",
-        "jotai": "^1.7.2",
-        "npm": "^8.12.2"
-    }
+  "name": "nfid",
+  "version": "0.0.0",
+  "license": "MIT",
+  "scripts": {},
+  "private": true,
+  "dependencies": {
+    "@swc/helpers": "~0.4.11",
+    "core-js": "^3.6.5",
+    "regenerator-runtime": "0.13.7",
+    "tslib": "^2.3.0"
+  },
+  "devDependencies": {
+    "@babel/preset-flow": "7.18.6",
+    "@nrwl/cli": "15.0.0",
+    "@nrwl/cypress": "14.8.6",
+    "@nrwl/eslint-plugin-nx": "15.0.0",
+    "@nrwl/jest": "15.0.0",
+    "@nrwl/js": "15.0.0",
+    "@nrwl/linter": "15.0.0",
+    "@nrwl/nx-cloud": "latest",
+    "@nrwl/web": "14.8.6",
+    "@nrwl/webpack": "15.0.1",
+    "@nrwl/workspace": "15.0.0",
+    "@nxext/vite": "14.1.0",
+    "@swc/cli": "~0.1.55",
+    "@swc/core": "^1.2.173",
+    "@types/jest": "28.1.1",
+    "@types/node": "16.11.7",
+    "@typescript-eslint/eslint-plugin": "^5.36.1",
+    "@typescript-eslint/parser": "^5.36.1",
+    "babel-jest": "28.1.1",
+    "css-loader": "6.7.1",
+    "cypress": "^10.7.0",
+    "eslint": "~8.15.0",
+    "eslint-config-prettier": "8.1.0",
+    "eslint-plugin-cypress": "^2.10.3",
+    "eslint-plugin-import": "^2.26.0",
+    "jest": "28.1.1",
+    "jest-environment-jsdom": "28.1.1",
+    "nx": "15.0.0",
+    "prettier": "^2.6.2",
+    "style-loader": "3.3.1",
+    "ts-jest": "28.0.5",
+    "ts-node": "10.9.1",
+    "typescript": "~4.8.2",
+    "vite": "^3.0.5",
+    "vite-plugin-eslint": "^1.6.0"
+  }
 }
