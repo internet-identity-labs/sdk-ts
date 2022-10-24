@@ -1,24 +1,74 @@
-name: Publish to NPM
+name: Dispatch NPM release
+
 on:
-    release:
-        types:
-            - published
+  workflow_dispatch:
+    inputs:
+      package:
+        type: choice
+        description: 'Package to release'
+        required: true
+        options:
+          - core
+          - credentials
+          - wallet
+      level:
+        type: choice
+        description: Select the release update level
+        options:
+          - prerelease
+          - prepatch
+          - patch
+          - preminor
+          - minor
+          - premajor
+          - major
+      preid:
+        type: choice
+        description: Select pre-id (alpha | beta)
+        options:
+          - alpha
+          - beta
+
 jobs:
-    build:
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v3
-            - uses: actions/setup-node@v3
-              with:
-                  registry-url: https://registry.npmjs.org
-                  node-version: 17
-            - run: npm i
-              env:
-                  NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-                  GH_TOKEN: ${{ secrets.GH_TOKEN }}
-            - run: npm t
-            - run: npm run build
-            - name: Publish package on NPM 📦
-              run: npm publish --workspaces --access public
-              env:
-                  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: 🔧 Git
+        run: |
+          git config user.email "github@indentitylabs.ooo"
+          git config user.name "Github InternetIdentityLabs"
+      - name: 🔧 Node
+        uses: actions/setup-node@v1
+        with:
+          node-version: 16
+          registry-url: https://registry.npmjs.org/
+
+      - name: 🔧 Yarn
+        run: |
+          yarn config set version-git-message "chore(${{ github.event.inputs.package }}): new release v%s"
+          yarn config set version-tag-prefix "@internet-identity-labs/${{ github.event.inputs.package }}@"
+      - name: 🤖 Install and build
+        working-directory: packages/${{ github.event.inputs.package }}
+        run: yarn
+
+      - name: 🤖 Increment package version
+        working-directory: packages/${{ github.event.inputs.package }}
+        run: |
+          if [[ ${{ github.event.inputs.level }} == "pre"* ]]; then
+            yarn version --${{ github.event.inputs.level }} --preid ${{ github.event.inputs.preid }}
+          else
+            yarn version --${{ github.event.inputs.level }}
+          fi
+      - name: 📦 Publish package on NPM
+        working-directory: packages/${{ github.event.inputs.package }}
+        run: yarn publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: 🎉 Push tags
+        run: |
+          git push
+          git push --tags
