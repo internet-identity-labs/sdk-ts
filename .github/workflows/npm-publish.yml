@@ -48,8 +48,8 @@ jobs:
 
       - name: 🔧 Yarn
         run: |
-          yarn config set version-git-message "chore(${{ github.event.inputs.package }}): new release v%s"
-          yarn config set version-tag-prefix "@internet-identity-labs/${{ github.event.inputs.package }}@"
+          yarn config set version-git-message "chore(${{ github.event.inputs.package }}): release v%s"
+          yarn config set version-tag-prefix "@nfid/${{ github.event.inputs.package }}@"
 
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
@@ -75,12 +75,8 @@ jobs:
             yarn version --${{ github.event.inputs.level }}
           fi
 
-      - name: 🤖 Build
-        run: npx nx build ${{ github.event.inputs.package }}
-
-      - name: 📦 Publish package on NPM
-        working-directory: dist/packages/${{ github.event.inputs.package }}
-        run: yarn publish --access public
+      - name: 📦 Build and publish package on NPM
+        run: npx nx publish ${{ github.event.inputs.package }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
