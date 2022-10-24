@@ -50,8 +50,20 @@ jobs:
         run: |
           yarn config set version-git-message "chore(${{ github.event.inputs.package }}): new release v%s"
           yarn config set version-tag-prefix "@internet-identity-labs/${{ github.event.inputs.package }}@"
-      - name: 🤖 Install and build
-        working-directory: packages/${{ github.event.inputs.package }}
+
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+
+      - uses: actions/cache@v3
+        id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      - name: 🤖 Install
         run: yarn
 
       - name: 🤖 Increment package version
@@ -62,8 +74,12 @@ jobs:
           else
             yarn version --${{ github.event.inputs.level }}
           fi
+
+      - name: 🤖 Build
+        run: npx nx build ${{ github.event.inputs.package }}
+
       - name: 📦 Publish package on NPM
-        working-directory: packages/${{ github.event.inputs.package }}
+        working-directory: dist/packages/${{ github.event.inputs.package }}
         run: yarn publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
