@@ -1,0 +1,70 @@
+{
+  "name": "request-transfer",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "sourceRoot": "examples/request-transfer/src",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nrwl/webpack:webpack",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "outputPath": "dist/examples/request-transfer",
+        "compiler": "babel",
+        "main": "examples/request-transfer/src/main.ts",
+        "tsConfig": "examples/request-transfer/tsconfig.app.json",
+        "assets": ["examples/request-transfer/src/favicon.ico"],
+        "index": "examples/request-transfer/src/index.html",
+        "baseHref": "/",
+        "polyfills": "examples/request-transfer/src/polyfills.ts",
+        "styles": ["examples/request-transfer/src/styles.scss"],
+        "webpackConfig": "examples/request-transfer/webpack.config.js",
+        "scripts": []
+      },
+      "configurations": {
+        "production": {
+          "optimization": true,
+          "outputHashing": "all",
+          "sourceMap": false,
+          "namedChunks": false,
+          "extractLicenses": true,
+          "vendorChunk": false,
+          "fileReplacements": [
+            {
+              "replace": "examples/request-transfer/src/environments/environment.ts",
+              "with": "examples/request-transfer/src/environments/environment.prod.ts"
+            }
+          ]
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nrwl/webpack:dev-server",
+      "options": {
+        "buildTarget": "request-transfer:build",
+        "hmr": true
+      },
+      "configurations": {
+        "production": {
+          "buildTarget": "request-transfer:build:production"
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["examples/request-transfer/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/examples/request-transfer"],
+      "options": {
+        "jestConfig": "examples/request-transfer/jest.config.ts",
+        "passWithNoTests": true
+      }
+    }
+  }
+}
