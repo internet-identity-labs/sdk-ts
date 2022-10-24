@@ -1055,6 +1055,51 @@
     debug "^3.1.0"
     lodash.once "^4.1.1"
 
+<<<<<<< HEAD
+=======
+"@dfinity/agent@^0.11.3":
+  version "0.11.3"
+  resolved "https://registry.yarnpkg.com/@dfinity/agent/-/agent-0.11.3.tgz#3363b1dbaa10a6e5cfe25e269316e2416fd3d11d"
+  integrity sha512-pqiogLey6S83SG5BS93hBCtXfGRW6tkxa8Y0c9HwxOP/wRoVEuKHdTcOn7rL/HN4mDTwxkdqK4EC1Kv24S1q4Q==
+  dependencies:
+    base64-arraybuffer "^0.2.0"
+    bignumber.js "^9.0.0"
+    borc "^2.1.1"
+    js-sha256 "0.9.0"
+    simple-cbor "^0.4.1"
+
+"@dfinity/auth-client@^0.11.3":
+  version "0.11.3"
+  resolved "https://registry.yarnpkg.com/@dfinity/auth-client/-/auth-client-0.11.3.tgz#f337f5b4249a09f00092ed0ad8bd3e76bfbed196"
+  integrity sha512-+wwjoucE8ZIjcA1IG+OQ8OxFoAajYfnELbSMZE1p3FGlbC0X3gpab0bbXqh8VKou8Ng1eRU+sAwItruCLiIBHg==
+
+"@dfinity/authentication@0.14.0":
+  version "0.14.0"
+  resolved "https://registry.yarnpkg.com/@dfinity/authentication/-/authentication-0.14.0.tgz#45b4dc63492dae96cf2a6ada4d796a7c20ba57aa"
+  integrity sha512-cTxc5gp2gakMN1HK/tC9HXJHLOHkKKqasIoCTQUBoddf7IzxAXndRUwHBCAfF39WtL5a2zZn1TlDknNWD1CUJA==
+
+"@dfinity/candid@^0.11.3":
+  version "0.11.3"
+  resolved "https://registry.yarnpkg.com/@dfinity/candid/-/candid-0.11.3.tgz#aed66124751545522acf9bde7cdc22b5d9ce31df"
+  integrity sha512-xX7xNj2lLt7SIlvy0sqNp4fpcTD/xnwEu9APj0tnIF64cnsxIiS12T1Z8jl9g80jCQ1CbRPQf4cfsOfS3Cd2OA==
+
+"@dfinity/identity@^0.11.3":
+  version "0.11.3"
+  resolved "https://registry.yarnpkg.com/@dfinity/identity/-/identity-0.11.3.tgz#b7ae0d049159f98bb3b693683824b7315124c4bb"
+  integrity sha512-AXgrG6a7PxJmiZOC12ooKvPeOfh4+v3dR7D6jynLlN4qMy0ry+BMZhWkyjWrlRR3p8oMznzfjoMuKN5pOrBKDg==
+  dependencies:
+    "@types/webappsec-credential-management" "^0.6.2"
+    borc "^2.1.1"
+    js-sha256 "^0.9.0"
+    secp256k1 "^4.0.2"
+    tweetnacl "^1.0.1"
+
+"@dfinity/principal@^0.11.0", "@dfinity/principal@^0.11.3":
+  version "0.11.3"
+  resolved "https://registry.yarnpkg.com/@dfinity/principal/-/principal-0.11.3.tgz#2130a7673bb8c2d404bc9842136547a91cb3edd2"
+  integrity sha512-+AJGDJ+RsveybSdxuTQFr2DPNZFpPfXnyixAOFWWdElVniSwnO/SwqQChR0AWvJdy/fKqoAXK+ZzyLG0uqSetA==
+
+>>>>>>> ecd16a0 (chore([sc-5078]): connect vercel deployment)
 "@esbuild/android-arm@0.15.12":
   version "0.15.12"
   resolved "https://registry.yarnpkg.com/@esbuild/android-arm/-/android-arm-0.15.12.tgz#e548b10a5e55b9e10537a049ebf0bc72c453b769"
