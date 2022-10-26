@@ -1,5 +1,9 @@
 import { postMessageToClient } from '@nfid/core';
-import { RequestTransferEvents, RequestTransferResult } from './wallet';
+import {
+  ClientEvents,
+  RequestTransferParams,
+  RequestTransferResult,
+} from './wallet';
 
 export type ProviderEvents =
   | { kind: 'Ready' }
@@ -11,14 +15,15 @@ export type ProviderEvents =
 export function registerRequestTransferHandler(
   handler: () => Promise<RequestTransferResult>
 ) {
-  const p = new Promise<void>((resolve) => {
+  const p = new Promise<RequestTransferParams>((resolve) => {
     window.addEventListener(
       'message',
-      async (event: MessageEvent<RequestTransferEvents>) => {
+      async (event: MessageEvent<ClientEvents>) => {
         // if (!validateEventOrigin(event, window.opener.origin)) return;
 
         // We accept RequestTransfer requests from the client
-        if (event.data.kind === 'RequestTransferResponse') {
+        if (event.data.kind === 'RequestTransfer') {
+          resolve(event.data.params);
           console.info(
             `Request transfer request received, triggering handler.`,
             event
@@ -27,7 +32,6 @@ export function registerRequestTransferHandler(
             kind: 'RequestTransferResponse',
             result: await handler(),
           });
-          resolve();
           window.close();
         }
       }
