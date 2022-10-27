@@ -33,13 +33,18 @@ export async function requestTransfer(
   return new Promise<RequestTransferResult>((resolve) => {
     const handler = handleRequestTransferFactory(resolve, provider, params);
     window.addEventListener('message', handler);
+    window.onbeforeunload = () => {
+      window.removeEventListener('message', handler);
+    };
     createWindow(
       provider.toString(),
-      () =>
+      () => {
+        window.removeEventListener('message', handler);
         resolve({
           status: 'ERROR',
           message: 'Terminated by user',
-        }),
+        });
+      },
       windowFeatures
     );
   });

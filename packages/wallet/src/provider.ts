@@ -18,7 +18,8 @@ export function registerRequestTransferHandler(
   const p = new Promise<RequestTransferParams>((resolve) => {
     window.addEventListener(
       'message',
-      async (event: MessageEvent<ClientEvents>) => {
+      async function nfidHandler(event: MessageEvent<ClientEvents>) {
+        // FIXME: commented because it throws an error
         // if (!validateEventOrigin(event, window.opener.origin)) return;
 
         // We accept RequestTransfer requests from the client
@@ -32,6 +33,7 @@ export function registerRequestTransferHandler(
             kind: 'RequestTransferResponse',
             result: await handler(),
           });
+          window.removeEventListener('message', nfidHandler);
           window.close();
         }
       }
