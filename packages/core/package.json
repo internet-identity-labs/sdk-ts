@@ -20,5 +20,14 @@
   "bugs": {
     "url": "https://github.com/internet-identity-labs/sdk-ts/issues"
   },
-  "homepage": "https://docs.nfid.one/"
+  "homepage": "https://docs.nfid.one/",
+  "keywords": [
+    "identity",
+    "idp",
+    "web3",
+    "internet computer",
+    "dfinity",
+    "nfid",
+    "identity labs"
+  ]
 }
