@@ -1,6 +1,5 @@
 {
   "name": "nfid",
-  "version": "0.0.1",
   "license": "MIT",
   "scripts": {
     "build": "npx nx build",

@@ -48,10 +48,10 @@ jobs:
 
       - name: 🔧 Yarn
         run: |
-          yarn config set version-git-message "chore(${{ github.event.inputs.package }}): new release v%s"
-          yarn config set version-tag-prefix "@internet-identity-labs/${{ github.event.inputs.package }}@"
-      - name: 🤖 Install and build
-        working-directory: packages/${{ github.event.inputs.package }}
+          yarn config set version-git-message "chore(${{ github.event.inputs.package }}): release v%s"
+          yarn config set version-tag-prefix "@nfid/${{ github.event.inputs.package }}@"
+
+      - name: 🤖 Install
         run: yarn
 
       - name: 🤖 Increment package version
@@ -62,11 +62,15 @@ jobs:
           else
             yarn version --${{ github.event.inputs.level }}
           fi
+
+      - name: 🤖 Build
+        run: npx nx build ${{ github.event.inputs.package }}
+
       - name: 📦 Publish package on NPM
-        working-directory: packages/${{ github.event.inputs.package }}
+        working-directory: dist/packages/${{ github.event.inputs.package }}
         run: yarn publish --access public
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.IL_GH_NPM_TOKEN }}
 
       - name: 🎉 Push tags
         run: |
