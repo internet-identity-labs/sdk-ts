@@ -51,18 +51,6 @@ jobs:
           yarn config set version-git-message "chore(${{ github.event.inputs.package }}): release v%s"
           yarn config set version-tag-prefix "@nfid/${{ github.event.inputs.package }}@"
 
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-
-      - uses: actions/cache@v3
-        id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
-        with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
-
       - name: 🤖 Install
         run: yarn
 
@@ -82,7 +70,7 @@ jobs:
         working-directory: dist/packages/${{ github.event.inputs.package }}
         run: yarn publish --access public
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.IL_GH_NPM_TOKEN }}
 
       - name: 🎉 Push tags
         run: |
