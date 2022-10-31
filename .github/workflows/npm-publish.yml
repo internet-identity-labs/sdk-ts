@@ -15,16 +15,18 @@ on:
         type: choice
         description: Select the release update level
         options:
-          - prerelease
-          - prepatch
-          - patch
-          - preminor
-          - minor
-          - premajor
           - major
+          - minor
+          - patch
+          - prerelease
+          - premajor
+          - preminor
+          - prepatch
       preid:
         type: choice
+        required: false
         description: Select pre-id (alpha | beta)
+        default: 'none'
         options:
           - alpha
           - beta
