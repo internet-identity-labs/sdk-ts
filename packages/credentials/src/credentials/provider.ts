@@ -1,4 +1,4 @@
-import { postMessageToClient } from '@nfid/core';
+import { postMessageToClient, validateSameOrigin } from '@nfid/core';
 import { ClientEvents, CredentialResult } from '.';
 
 export type ProviderEvents =
@@ -15,7 +15,7 @@ export function registerPhoneNumberCredentialHandler(
     window.addEventListener(
       'message',
       async (event: MessageEvent<ClientEvents>) => {
-        // if (!validateEventOrigin(event, window.opener.origin)) return;
+        if (!validateSameOrigin(event, window.opener)) return;
 
         // We accept credential requests from the client
         if (event.data.kind === 'RequestPhoneNumberCredential') {

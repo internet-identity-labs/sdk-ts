@@ -10,3 +10,18 @@ export function validateEventOrigin(
   }
   return true;
 }
+
+export function validateSameOrigin(
+  event: MessageEvent,
+  origin: Window
+): boolean {
+  console.debug('validateSameOrigin', {
+    origin,
+    event,
+  });
+  if (event.source !== origin) {
+    console.warn(`WARNING: expected same origin (ignoring)`, { event, origin });
+    return false;
+  }
+  return true;
+}

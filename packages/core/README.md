@@ -1,11 +1,9 @@
 # core
 
-This library was generated with [Nx](https://nx.dev).
+This library contains shared typescript implementations for the `@nfid/*` packages.
 
-## Building
+## installation
 
-Run `nx build core` to build the library.
-
-## Running unit tests
-
-Run `nx test core` to execute the unit tests via [Jest](https://jestjs.io).
+```sh
+npm i @nfid/core
+```

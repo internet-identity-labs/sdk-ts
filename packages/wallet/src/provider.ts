@@ -1,4 +1,4 @@
-import { postMessageToClient } from '@nfid/core';
+import { postMessageToClient, validateSameOrigin } from '@nfid/core';
 import {
   ClientEvents,
   RequestTransferParams,
@@ -19,14 +19,13 @@ export function registerRequestTransferHandler(
     window.addEventListener(
       'message',
       async function nfidHandler(event: MessageEvent<ClientEvents>) {
-        // FIXME: commented because it throws an error
-        // if (!validateEventOrigin(event, window.opener.origin)) return;
+        if (!validateSameOrigin(event, window.opener)) return;
 
         // We accept RequestTransfer requests from the client
         if (event.data.kind === 'RequestTransfer') {
           resolve(event.data.params);
-          console.info(
-            `Request transfer request received, triggering handler.`,
+          console.debug(
+            `registerRequestTransferHandler: request received, triggering handler.`,
             event
           );
           postMessageToClient({
