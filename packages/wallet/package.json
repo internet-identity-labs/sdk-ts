@@ -1,5 +1,24 @@
 {
   "name": "@nfid/wallet",
   "version": "1.0.0",
-  "type": "commonjs"
+  "license": "ISC",
+  "type": "commonjs",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/internet-identity-labs/sdk-ts.git"
+  },
+  "contributors": [
+    {
+      "name": "jorgenbuilder"
+    },
+    {
+      "name": "Philipp Litzenberger",
+      "email": "philipp@identitylabs.ooo",
+      "url": "https://github.com/plitzenberger"
+    }
+  ],
+  "bugs": {
+    "url": "https://github.com/internet-identity-labs/sdk-ts/issues"
+  },
+  "homepage": "https://docs.nfid.one/"
 }
