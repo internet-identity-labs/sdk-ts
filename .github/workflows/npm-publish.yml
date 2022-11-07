@@ -51,7 +51,7 @@ jobs:
       - name: 🔧 Yarn
         run: |
           yarn config set version-git-message "chore(${{ github.event.inputs.package }}): release v%s"
-          yarn config set version-tag-prefix "@nfid/${{ github.event.inputs.package }}v"
+          yarn config set version-tag-prefix "@nfid/${{ github.event.inputs.package }}-v"
 
       - name: 🤖 Install
         run: yarn
