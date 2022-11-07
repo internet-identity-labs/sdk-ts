@@ -14,7 +14,7 @@ jest.mock('@nfid/core', () => ({
 }));
 
 describe('wallet', () => {
-  describe('requestTransfer', () => {
+  describe('requestAccounts', () => {
     it('should work', () => {
       const listeners = new Map();
       const addEventListener = jest
@@ -31,7 +31,6 @@ describe('wallet', () => {
         });
 
       requestAccounts();
-
       expect(createWindow).toBeCalledWith(
         defaultProvider.toString(),
         expect.any(Function),
@@ -44,9 +43,22 @@ describe('wallet', () => {
 
       const listener = listeners.get('message');
 
+      // NFID will send a Ready event when flow has been mounted
+      listener({ data: { kind: 'Ready' }, origin: 'https://nfid.one' });
+
       expect(postMessageToProvider).toHaveBeenCalledWith({
         kind: 'RequestAccounts',
       });
+
+      // NFID will send a RequestAccountsResponse event when user has
+      // accepted and the accounts has been successful
+      listener({
+        data: { kind: 'RequestAccountsResponse', result: { accounts: [] } },
+        origin: 'https://nfid.one',
+      });
+      expect(done).toHaveBeenCalledTimes(1);
+      expect(removeEventListener).toHaveBeenCalledTimes(1);
+      expect(listeners.get('message')).toBeUndefined();
     });
   });
 });
