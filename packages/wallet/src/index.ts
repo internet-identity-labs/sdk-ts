@@ -1,2 +1,2 @@
-export * as transfer from './request-transfer';
-export * as accounts from './request-accounts';
+export * from './request-transfer';
+export * from './request-accounts';
