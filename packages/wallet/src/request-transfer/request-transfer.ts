@@ -7,9 +7,9 @@ import {
 } from '@nfid/core';
 import { validateEventOrigin } from '@nfid/core';
 import { defaultProvider } from './default-provider';
-import { ProviderEvents } from './provider';
+import { RequestTransferProviderEvents } from './provider';
 
-export type ClientEvents =
+export type RequestTransferClientEvents =
   | { kind: 'Ready' }
   | { kind: 'RequestTransfer'; params: RequestTransferParams };
 
@@ -55,7 +55,7 @@ const handleRequestTransferFactory = (
   provider: URL,
   params: RequestTransferParams
 ) =>
-  function handler(event: MessageEvent<ProviderEvents>) {
+  function handler(event: MessageEvent<RequestTransferProviderEvents>) {
     if (!validateEventOrigin(event, provider.origin)) return;
 
     if (event.data.kind === 'Ready') {

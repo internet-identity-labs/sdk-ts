@@ -1,2 +1,2 @@
 export * from './request-transfer';
-export * from './request-accounts';
+export * from './provider';

@@ -1,6 +1,7 @@
 {
   "name": "nfid",
   "license": "MIT",
+  "version": "0.0.1",
   "scripts": {
     "build": "npx nx build",
     "build:affected": "npx nx affected:build",
