@@ -7,9 +7,11 @@ import {
 } from '@nfid/core';
 import { validateEventOrigin } from '@nfid/core';
 import { defaultProvider } from './default-provider';
-import { ProviderEvents } from './provider';
+import { RequestAccountsProviderEvents } from './provider';
 
-export type ClientEvents = { kind: 'Ready' } | { kind: 'RequestAccounts' };
+export type RequestAccountsClientEvents =
+  | { kind: 'Ready' }
+  | { kind: 'RequestAccounts' };
 
 export type RequestAccountsResult =
   | { status: 'SUCCESS'; accounts: string[] }
@@ -46,7 +48,7 @@ const handleRequestAccountsFactory = (
   resolve: (x: RequestAccountsResult) => void,
   provider: URL
 ) =>
-  function handler(event: MessageEvent<ProviderEvents>) {
+  function handler(event: MessageEvent<RequestAccountsProviderEvents>) {
     if (!validateEventOrigin(event, provider.origin)) return;
 
     if (event.data.kind === 'Ready') {

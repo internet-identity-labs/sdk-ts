@@ -1,11 +1,11 @@
 import { postMessageToClient, validateSameOrigin } from '@nfid/core';
 import {
-  ClientEvents,
+  RequestTransferClientEvents,
   RequestTransferParams,
   RequestTransferResult,
-} from './wallet';
+} from './request-transfer';
 
-export type ProviderEvents =
+export type RequestTransferProviderEvents =
   | { kind: 'Ready' }
   | {
       kind: 'RequestTransferResponse';
@@ -18,7 +18,9 @@ export function registerRequestTransferHandler(
   const p = new Promise<RequestTransferParams>((resolve) => {
     window.addEventListener(
       'message',
-      async function nfidHandler(event: MessageEvent<ClientEvents>) {
+      async function nfidHandler(
+        event: MessageEvent<RequestTransferClientEvents>
+      ) {
         if (!validateSameOrigin(event, window.opener)) return;
 
         // We accept RequestTransfer requests from the client

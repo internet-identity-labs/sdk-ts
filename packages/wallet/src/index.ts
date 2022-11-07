@@ -1,2 +1,2 @@
-export * from './wallet';
-export * from './provider';
+export * as transfer from './request-transfer';
+export * as accounts from './request-accounts';

@@ -1,6 +1,6 @@
 import './styles.scss';
 
-import { requestTransfer } from '@nfid/wallet';
+import { transfer } from '@nfid/wallet';
 
 Client();
 
@@ -19,7 +19,7 @@ async function Client() {
 
     const params = { to: to.value, amount: Number(amount.value) };
 
-    requestTransfer(params, {
+    transfer.requestTransfer(params, {
       provider: PROVIDER_URL,
     });
   };

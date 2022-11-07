@@ -1,3 +1,4 @@
+import { requestTransfer } from './request-transfer';
 import {
   createWindow,
   defaultWindowFeatures,
@@ -5,7 +6,7 @@ import {
   postMessageToProvider,
 } from '@nfid/core';
 import { defaultProvider } from './default-provider';
-import { requestAccounts } from './accounts';
+
 jest.mock('@nfid/core', () => ({
   createWindow: jest.fn(),
   validateEventOrigin: jest.fn().mockImplementation(() => true),
@@ -14,7 +15,7 @@ jest.mock('@nfid/core', () => ({
 }));
 
 describe('wallet', () => {
-  describe('requestAccounts', () => {
+  describe('requestTransfer', () => {
     it('should work', () => {
       const listeners = new Map();
       const addEventListener = jest
@@ -30,7 +31,8 @@ describe('wallet', () => {
           }
         });
 
-      requestAccounts();
+      const params = { to: 'myAccount', amount: 1_000_000 };
+      requestTransfer(params);
       expect(createWindow).toBeCalledWith(
         defaultProvider.toString(),
         expect.any(Function),
@@ -47,13 +49,14 @@ describe('wallet', () => {
       listener({ data: { kind: 'Ready' }, origin: 'https://nfid.one' });
 
       expect(postMessageToProvider).toHaveBeenCalledWith({
-        kind: 'RequestAccounts',
+        kind: 'RequestTransfer',
+        params,
       });
 
-      // NFID will send a RequestAccountsResponse event when user has
-      // accepted and the accounts has been successful
+      // NFID will send a RequestTransferResponse event when user has
+      // accepted and the transfer has been successful
       listener({
-        data: { kind: 'RequestAccountsResponse', result: { accounts: [] } },
+        data: { kind: 'RequestTransferResponse', result: { height: 1 } },
         origin: 'https://nfid.one',
       });
       expect(done).toHaveBeenCalledTimes(1);

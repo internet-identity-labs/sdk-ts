@@ -15,7 +15,6 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@nfid/accounts": ["packages/accounts/src/index.ts"],
       "@nfid/core": ["packages/core/src/index.ts"],
       "@nfid/credentials": ["packages/credentials/src/index.ts"],
       "@nfid/wallet": ["packages/wallet/src/index.ts"]

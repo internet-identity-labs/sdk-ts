@@ -1,7 +1,10 @@
 import { postMessageToClient, validateSameOrigin } from '@nfid/core';
-import { ClientEvents, RequestAccountsResult } from './accounts';
+import {
+  RequestAccountsClientEvents,
+  RequestAccountsResult,
+} from './request-accounts';
 
-export type ProviderEvents =
+export type RequestAccountsProviderEvents =
   | { kind: 'Ready' }
   | {
       kind: 'RequestAccountsResponse';
@@ -14,7 +17,9 @@ export function registerRequestAccountsHandler(
   const p = new Promise<string>((resolve) => {
     window.addEventListener(
       'message',
-      async function nfidHandler(event: MessageEvent<ClientEvents>) {
+      async function nfidHandler(
+        event: MessageEvent<RequestAccountsClientEvents>
+      ) {
         if (!validateSameOrigin(event, window.opener)) return;
 
         // We accept RequestAccounts requests from the client
