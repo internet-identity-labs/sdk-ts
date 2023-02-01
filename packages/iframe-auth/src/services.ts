@@ -2,18 +2,17 @@ import { Identity } from '@dfinity/agent';
 import { AuthClient } from '@dfinity/auth-client';
 
 const handleAuthenticate = async (
-  iframeElement: HTMLElement,
   provider: string,
   onSuccess?: (identity: Identity) => void,
-  onError?: (error?: string) => void,
-  iframeStyleQueries?: string
+  onError?: (error?: string) => void
 ) => {
   const authClient = await AuthClient.create();
 
   await authClient.login({
     onSuccess: () => onSuccess && onSuccess(authClient.getIdentity()),
     onError: (error) => onError && onError(error),
-    identityProvider: `${provider}/authenticate?${iframeStyleQueries}`,
+    identityProvider: `${provider}/authenticate`,
+    // TODO patch
     // idpWindowName: 'nfidIdpWindow',
   });
 };
@@ -36,32 +35,11 @@ export const IFrameAuthClient = (
 ) => {
   const iframe = document.createElement('iframe');
 
-  iframe.src = provider;
+  iframe.src = `${provider}/authenticate?${iframeStyleQueries}`;
   iframe.title = 'nfidIdpWindow';
   iframe.name = 'nfidIdpWindow';
   iframe.allow = 'publickey-credentials-get';
-  iframe.onload = () =>
-    handleAuthenticate(
-      iframeElement,
-      provider,
-      onSuccess,
-      onError,
-      iframeStyleQueries
-    );
+  iframe.onload = () => handleAuthenticate(provider, onSuccess, onError);
 
-  // <iframe
-  //   className={clsx(
-  //     "w-full transition-all delay-300 h-full",
-  //     isLoading && "opacity-0",
-  //     className,
-  //   )}
-  //   src={src}
-  //   frameBorder="0"
-  //   title="nfidIdpWindow"
-  //   name="nfidIdpWindow"
-  //   allow="publickey-credentials-get"
-  //   onLoad={handleOnLoad}
-  // />
-  console.log({ iframeElement, iframe });
   iframeElement.append(iframe);
 };
