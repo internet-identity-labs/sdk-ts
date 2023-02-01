@@ -1,0 +1,70 @@
+{
+  "name": "iframe-auth",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "sourceRoot": "examples/iframe-auth/src",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nrwl/webpack:webpack",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "outputPath": "dist/examples/iframe-auth",
+        "compiler": "babel",
+        "main": "examples/iframe-auth/src/main.ts",
+        "tsConfig": "examples/iframe-auth/tsconfig.app.json",
+        "assets": ["examples/iframe-auth/src/favicon.ico"],
+        "index": "examples/iframe-auth/src/index.html",
+        "baseHref": "/",
+        "polyfills": "examples/iframe-auth/src/polyfills.ts",
+        "styles": ["examples/iframe-auth/src/styles.scss"],
+        "webpackConfig": "examples/iframe-auth/webpack.config.js",
+        "scripts": []
+      },
+      "configurations": {
+        "production": {
+          "optimization": true,
+          "outputHashing": "all",
+          "sourceMap": false,
+          "namedChunks": false,
+          "extractLicenses": true,
+          "vendorChunk": false,
+          "fileReplacements": [
+            {
+              "replace": "examples/iframe-auth/src/environments/environment.ts",
+              "with": "examples/iframe-auth/src/environments/environment.prod.ts"
+            }
+          ]
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nrwl/webpack:dev-server",
+      "options": {
+        "buildTarget": "iframe-auth:build",
+        "hmr": true
+      },
+      "configurations": {
+        "production": {
+          "buildTarget": "iframe-auth:build:production"
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["examples/iframe-auth/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/examples/iframe-auth"],
+      "options": {
+        "jestConfig": "examples/iframe-auth/jest.config.ts",
+        "passWithNoTests": true
+      }
+    }
+  }
+}
