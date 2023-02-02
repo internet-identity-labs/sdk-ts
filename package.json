@@ -3,6 +3,7 @@
   "license": "MIT",
   "version": "0.0.1",
   "scripts": {
+    "postinstall": "npx patch-package",
     "build": "npx nx build",
     "build:affected": "npx nx affected:build",
     "watch": "npm run watch --workspaces --if-present",

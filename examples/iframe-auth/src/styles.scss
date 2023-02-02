@@ -119,3 +119,8 @@ button {
 button:disabled {
   cursor: default;
 }
+
+iframe {
+  border: none;
+  height: 480px;
+}

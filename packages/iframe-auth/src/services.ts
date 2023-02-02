@@ -12,8 +12,7 @@ const handleAuthenticate = async (
     onSuccess: () => onSuccess && onSuccess(authClient.getIdentity()),
     onError: (error) => onError && onError(error),
     identityProvider: `${provider}/authenticate`,
-    // TODO patch
-    // idpWindowName: 'nfidIdpWindow',
+    idpWindowName: 'nfidIdpWindow',
   });
 };
 
