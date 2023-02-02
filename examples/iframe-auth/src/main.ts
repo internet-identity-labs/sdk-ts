@@ -1,6 +1,6 @@
 import './styles.scss';
 
-import { IFrameAuthClient } from '../../../packages/iframe-auth/src';
+import { IFrameAuthClient } from '@nfid/iframe-auth';
 import { Identity } from '@dfinity/agent';
 
 Client();

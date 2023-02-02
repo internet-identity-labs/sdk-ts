@@ -1,32 +1,32 @@
 {
-  "name": "credentials",
+  "name": "iframe-auth",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "packages/credentials/src",
+  "sourceRoot": "packages/iframe-auth/src",
   "projectType": "library",
   "targets": {
     "build": {
       "executor": "@nrwl/js:tsc",
       "outputs": ["{options.outputPath}"],
       "options": {
-        "outputPath": "dist/packages/credentials",
-        "main": "packages/credentials/src/index.ts",
-        "tsConfig": "packages/credentials/tsconfig.lib.json",
+        "outputPath": "dist/packages/iframe-auth",
+        "main": "packages/iframe-auth/src/index.ts",
+        "tsConfig": "packages/iframe-auth/tsconfig.lib.json",
         "buildableProjectDepsInPackageJsonType": "dependencies",
-        "assets": ["packages/credentials/*.md"]
+        "assets": ["packages/iframe-auth/*.md"]
       }
     },
     "lint": {
       "executor": "@nrwl/linter:eslint",
       "outputs": ["{options.outputFile}"],
       "options": {
-        "lintFilePatterns": ["packages/credentials/**/*.ts"]
+        "lintFilePatterns": ["packages/iframe-auth/**/*.ts"]
       }
     },
     "test": {
       "executor": "@nrwl/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
       "options": {
-        "jestConfig": "packages/credentials/jest.config.ts",
+        "jestConfig": "packages/iframe-auth/jest.config.ts",
         "passWithNoTests": true
       }
     }

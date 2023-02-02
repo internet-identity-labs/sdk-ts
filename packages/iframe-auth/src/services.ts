@@ -1,11 +1,12 @@
-import { Identity } from '@dfinity/agent';
 import { AuthClient } from '@dfinity/auth-client';
+import { IHandleAuthenticate, IIFrameAuthClient } from './types';
 
-const handleAuthenticate = async (
-  provider: string,
-  onSuccess?: (identity: Identity) => void,
-  onError?: (error?: string) => void
-) => {
+const handleAuthenticate = async ({
+  provider,
+  onSuccess,
+  onError,
+  authClientConfig,
+}: IHandleAuthenticate) => {
   const authClient = await AuthClient.create();
 
   await authClient.login({
@@ -13,6 +14,7 @@ const handleAuthenticate = async (
     onError: (error) => onError && onError(error),
     identityProvider: `${provider}/authenticate`,
     idpWindowName: 'nfidIdpWindow',
+    ...authClientConfig,
   });
 };
 
@@ -25,20 +27,26 @@ const handleAuthenticate = async (
  * @param iframeStyleQueries PREMIUM FEATURE | Custom iframe styling
  * @return void
  */
-export const IFrameAuthClient = (
-  iframeElement: HTMLElement,
-  provider: string,
-  onSuccess?: (identity: Identity) => void,
-  onError?: (error?: string) => void,
-  iframeStyleQueries?: string
-) => {
+
+export const IFrameAuthClient = ({
+  iframeElement,
+  provider,
+  onSuccess,
+  onError,
+  iframeStyleQueries,
+}: IIFrameAuthClient) => {
   const iframe = document.createElement('iframe');
 
   iframe.src = `${provider}/authenticate?${iframeStyleQueries}`;
   iframe.title = 'nfidIdpWindow';
   iframe.name = 'nfidIdpWindow';
   iframe.allow = 'publickey-credentials-get';
-  iframe.onload = () => handleAuthenticate(provider, onSuccess, onError);
+  iframe.onload = () =>
+    handleAuthenticate({
+      provider,
+      onSuccess,
+      onError,
+    });
 
   iframeElement.append(iframe);
 };
