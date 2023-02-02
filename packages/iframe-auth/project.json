@@ -1,0 +1,35 @@
+{
+  "name": "iframe-auth",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/iframe-auth/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/iframe-auth",
+        "main": "packages/iframe-auth/src/index.ts",
+        "tsConfig": "packages/iframe-auth/tsconfig.lib.json",
+        "buildableProjectDepsInPackageJsonType": "dependencies",
+        "assets": ["packages/iframe-auth/*.md"]
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["packages/iframe-auth/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "packages/iframe-auth/jest.config.ts",
+        "passWithNoTests": true
+      }
+    }
+  },
+  "tags": []
+}

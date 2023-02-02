@@ -1,0 +1,35 @@
+{
+  "name": "@nfid/iframe-auth",
+  "version": "1.0.0",
+  "license": "ISC",
+  "type": "commonjs",
+  "contributors": [
+    {
+      "name": "Pavlo Chorniy"
+    },
+    {
+      "name": "Philipp Litzenberger",
+      "email": "philipp@identitylabs.ooo",
+      "url": "https://github.com/plitzenberger"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/internet-identity-labs/sdk-ts.git"
+  },
+  "bugs": {
+    "url": "https://github.com/internet-identity-labs/sdk-ts/issues"
+  },
+  "homepage": "https://docs.nfid.one/",
+  "keywords": [
+    "identity",
+    "credentials",
+    "idp",
+    "web3",
+    "internet computer",
+    "dfinity",
+    "nfid",
+    "identity labs",
+    "phone number"
+  ]
+}
