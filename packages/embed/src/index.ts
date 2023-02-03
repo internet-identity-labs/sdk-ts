@@ -1,1 +1,1 @@
-export * from './lib/embed';
+export * from './lib/nfid';
