@@ -1,7 +1,7 @@
-import { BehaviorSubject } from "rxjs"
 import { ethers } from "ethers"
 import { hideIframe, showIframe } from "./iframe/mount-iframe"
 import { request } from "./postmsg-rpc"
+import { getIframe } from "./iframe/get-iframe"
 
 
 export interface NFIDInpageProviderObservable {
@@ -10,56 +10,45 @@ export interface NFIDInpageProviderObservable {
   selectedAddress?: string
 }
 
-const nfidInpageProvider$ = new BehaviorSubject<NFIDInpageProviderObservable>({
-  chainId: "0x5",
-  provider: new ethers.providers.JsonRpcProvider(
-    "https://ethereum-goerli-rpc.allthatnode.com",
-  )
-})
 
-export interface NFIDInpageProvider extends NFIDInpageProviderObservable {
-  request({ method, params }: { method: string, params: Array<any> }): Promise<any>
-}
+export class NFIDInpageProvider extends ethers.providers.JsonRpcProvider {
+  chainId = "0x5"
+  provider = this
 
-export const nfidInpageProvider: NFIDInpageProvider = {
-  get chainId() { return nfidInpageProvider$.value.chainId },
-  get selectedAddress() { return nfidInpageProvider$.value.selectedAddress },
-  get provider() {
-    return nfidInpageProvider$.value.provider
-  },
+  constructor() {
+    super("https://ethereum-goerli-rpc.allthatnode.com")
+  }
 
-  async request({ method, params }) {
+  async request({ method, params }: { method: string, params: Array<any> }): Promise<any> {
     console.debug("NFIDInpageProvider.request", { method, params })
     switch (method) {
       case "eth_signTypedData_v4":
       case "eth_sendTransaction": {
-        if (!params) throw new Error(`${method} missing params`)
+        const iframe = getIframe()
+
         showIframe()
-        return await request({ method, params })
+        return await request(iframe, { method, params })
           .then((response: any) => {
             console.debug(`NFIDInpageProvider.response ${method}`, { response })
             hideIframe()
-            // TODO:
-            // - [ ] add error handling
             return response.result ? response.result.hash : response.error
           })
       }
 
       case "eth_accounts": {
-        return await request({ method, params })
+        const iframe = getIframe()
+        return await request(iframe, { method, params })
           .then((response: any) => {
             console.debug("NFIDInpageProvider.request eth_accounts", { response })
             hideIframe()
-            // TODO:
-            // - [ ] add error handling
-            return response.result
+            return response.result ? response.result : response.error
           })
       }
 
       default: {
         console.debug("NFIDInpageProvider.request default", { method, params })
-        return await this.provider.send(method, params)
+        return await this.send(method, params)
       }
     }
-  },
+  }
 }

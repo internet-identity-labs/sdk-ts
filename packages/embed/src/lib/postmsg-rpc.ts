@@ -1,8 +1,4 @@
-import { fromEvent } from "rxjs"
-import { first } from "rxjs/operators"
-
 import * as uuid from "uuid"
-import { getIframe } from "./iframe/get-iframe"
 
 export const RPC_BASE = { jsonrpc: "2.0" }
 
@@ -30,8 +26,15 @@ interface RPCErrorResponse extends RPCBase {
 
 export type RPCResponse = RPCSuccessResponse | RPCErrorResponse
 
+type RPCRequestOptions = {
+  timeout?: number
+}
 
-export async function request<T>({ method, params }: Omit<RPCMessage, "jsonrpc" | "id">) {
+export async function request<T>(
+  iframe: { contentWindow: Window },
+  { method, params }: Omit<RPCMessage, "jsonrpc" | "id">,
+  options: RPCRequestOptions = { timeout: 20000 }
+) {
   const requestId = uuid.v4()
   const req = {
     jsonrpc: "2.0",
@@ -42,17 +45,18 @@ export async function request<T>({ method, params }: Omit<RPCMessage, "jsonrpc" 
   console.debug("request", { ...req })
 
   return new Promise<T>((resolve, reject) => {
-    const iframe = getIframe()
 
-    if (!iframe || iframe.contentWindow === null) {
-      return reject(new Error("nfid iframe not initialized"))
-    }
-
+    const timeout = options.timeout && setTimeout(() => {
+      window.removeEventListener("message", handleEvent);
+      // FIXME: check interface
+      reject(new Error("timeout"))
+    }, options.timeout)
 
     const handleEvent = (event: MessageEvent) => {
       if (event.data && event.data.id === requestId) {
         resolve(event.data);
         window.removeEventListener("message", handleEvent);
+        timeout && clearTimeout(timeout)
       }
     }
 

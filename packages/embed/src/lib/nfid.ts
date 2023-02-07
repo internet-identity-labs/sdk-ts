@@ -1,6 +1,6 @@
 import { fromEvent, BehaviorSubject } from "rxjs"
 import { first } from "rxjs/operators"
-import { NFIDInpageProvider, nfidInpageProvider } from "./inpage-provider"
+import { NFIDInpageProvider } from "./inpage-provider"
 import { buildIframe } from "./iframe/make-iframe"
 import { showIframe } from "./iframe/mount-iframe"
 
@@ -54,6 +54,7 @@ export const nfid = {
   async init() {
     // TODO:
     // - [ ] add reject handler
+    const nfidInpageProvider = new NFIDInpageProvider()
     return new Promise<boolean>((resolve) => {
       const nfidIframe = buildIframe(() => {
         nfidIframe.style.display = "block"
