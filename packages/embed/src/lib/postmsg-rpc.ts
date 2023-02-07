@@ -48,14 +48,16 @@ export async function request<T>({ method, params }: Omit<RPCMessage, "jsonrpc" 
       return reject(new Error("nfid iframe not initialized"))
     }
 
+
+    const handleEvent = (event: MessageEvent) => {
+      if (event.data && event.data.id === requestId) {
+        resolve(event.data);
+        window.removeEventListener("message", handleEvent);
+      }
+    }
+
+    window.addEventListener("message", handleEvent);
+
     iframe.contentWindow.postMessage(req, "*")
-    const source = fromEvent(window, "message")
-    const events = source.pipe(
-      first((event: any) => event.data && event.data.id === requestId),
-    )
-    const observer = events.subscribe((value) => {
-      observer.unsubscribe()
-      resolve(value)
-    })
   })
 }

@@ -41,7 +41,7 @@ export const nfidInpageProvider: NFIDInpageProvider = {
             hideIframe()
             // TODO:
             // - [ ] add error handling
-            return response.data.result ? response.data.result.hash : response.data.error
+            return response.result ? response.result.hash : response.error
           })
       }
 
@@ -52,7 +52,7 @@ export const nfidInpageProvider: NFIDInpageProvider = {
             hideIframe()
             // TODO:
             // - [ ] add error handling
-            return response.data.result
+            return response.result
           })
       }
 
