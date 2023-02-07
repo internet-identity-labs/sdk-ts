@@ -31,53 +31,6 @@ export const nfidInpageProvider: NFIDInpageProvider = {
   async request({ method, params }) {
     console.debug("NFIDInpageProvider.request", { method, params })
     switch (method) {
-      case "eth_chainId":
-        return this.chainId
-      // FIXME:
-      // delegated to default provider
-      case "eth_gasPrice": {
-        const result = await this.provider.getGasPrice()
-        return result.toHexString()
-      }
-
-      case "eth_estimateGas": {
-        if (!params) throw new Error("eth_estimateGas: missing params")
-        // const { from, to, value } = params[0]
-        // const result = await this.provider.estimateGas({ from, to, value: 1 })
-        // return result.toHexString()
-        // eslint-disable-next-line no-undef
-        const gasPrice = await this.provider.getGasPrice()
-        console.debug("NFIDInpageProvider.response eth_estimateGas", { gasPrice })
-        // debugger
-        // const hexlified = ethers.utils.hexlify(response)
-        // debugger
-        // console.debug("NFIDInpageProvider.response eth_estimateGas", { response, hexlified })
-        return 21000
-      }
-
-      case "eth_getTransactionByHash": {
-        if (!params) throw new Error("eth_getTransactionByHash: missing params")
-        console.debug("eth_getTransactionByHash", { method, params })
-        return await this.provider.getTransaction(params[0])
-      }
-
-      case "eth_getBlockByNumber": {
-        return await this.provider.getBlockNumber()
-      }
-
-      case "eth_getTransactionReceipt": {
-        if (!params) throw new Error("eth_getTransactionReceipt: missing params")
-        const response = await this.provider.getTransactionReceipt(params[0])
-        console.debug("eth_getTransactionReceipt", { response, params, hash: params[0] })
-
-        return response
-      }
-
-      case "eth_call": {
-        console.warn("eth_call not implemented", { method, params })
-        return null
-      }
-
       case "eth_signTypedData_v4":
       case "eth_sendTransaction": {
         if (!params) throw new Error(`${method} missing params`)
@@ -104,7 +57,8 @@ export const nfidInpageProvider: NFIDInpageProvider = {
       }
 
       default: {
-        console.error("NFIDInpageProvider.request missing message", { method, params })
+        console.debug("NFIDInpageProvider.request default", { method, params })
+        return await this.provider.send(method, params)
       }
     }
   },
