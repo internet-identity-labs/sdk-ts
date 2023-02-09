@@ -29,8 +29,6 @@ nfidBehaviorSubject$.subscribe({
   },
 })
 
-// 1. Mount the iframe at /wallet/connect
-// 2.	Establish rpc postMessage connection with the iframe
 export interface NFID extends NFIDObservable {
   provider?: NFIDInpageProvider
   ethereum?: NFIDInpageProvider
@@ -51,9 +49,8 @@ export const nfid = {
   get isIframeInstantiated() {
     return nfidBehaviorSubject$.value.isIframeInstantiated
   },
+
   async init() {
-    // TODO:
-    // - [ ] add reject handler
     const nfidInpageProvider = new NFIDInpageProvider()
     return new Promise<boolean>((resolve) => {
       const nfidIframe = buildIframe(() => {
@@ -69,11 +66,10 @@ export const nfid = {
       })
     })
   },
+
   async login() {
     if (!nfidBehaviorSubject$.value.nfidIframe) throw new Error("NFID iframe not instantiated")
     showIframe()
-    // TODO:
-    // - [ ] add reject handler
     return new Promise<boolean>((resolve) => {
       const source = fromEvent(window, "message")
       const events = source.pipe(
