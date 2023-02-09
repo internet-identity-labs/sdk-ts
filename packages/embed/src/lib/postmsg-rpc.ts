@@ -16,18 +16,26 @@ interface RPCSuccessResponse extends RPCBase {
   result: unknown
 }
 
+interface ProviderRpcError extends Error {
+  message: string;
+  code: number;
+  data?: unknown;
+}
+
 interface RPCErrorResponse extends RPCBase {
-  error: {
-    code: number
-    message: string
-    data: unknown
-  }
+  error: ProviderRpcError
 }
 
 export type RPCResponse = RPCSuccessResponse | RPCErrorResponse
 
 type RPCRequestOptions = {
   timeout?: number
+}
+
+class ProviderRpcError extends Error {
+  constructor(message: string, public code: number, public data?: unknown) {
+    super(message)
+  }
 }
 
 export async function request<T>(
@@ -48,8 +56,7 @@ export async function request<T>(
 
     const timeout = options.timeout && setTimeout(() => {
       window.removeEventListener("message", handleEvent);
-      // FIXME: check interface
-      reject(new Error("timeout"))
+      reject(new ProviderRpcError("Request timed out", 408))
     }, options.timeout)
 
     const handleEvent = (event: MessageEvent) => {
