@@ -1,19 +1,19 @@
-import * as uuid from "uuid"
+import * as uuid from 'uuid';
 
-export const RPC_BASE = { jsonrpc: "2.0" }
+export const RPC_BASE = { jsonrpc: '2.0' };
 
 interface RPCBase {
-  jsonrpc: string
-  id: string
+  jsonrpc: string;
+  id: string;
 }
 
 export interface RPCMessage extends RPCBase {
-  method: string
-  params: unknown[]
+  method: string;
+  params: unknown[];
 }
 
 interface RPCSuccessResponse extends RPCBase {
-  result: unknown
+  result: unknown;
 }
 
 interface ProviderRpcError extends Error {
@@ -23,52 +23,53 @@ interface ProviderRpcError extends Error {
 }
 
 interface RPCErrorResponse extends RPCBase {
-  error: ProviderRpcError
+  error: ProviderRpcError;
 }
 
-export type RPCResponse = RPCSuccessResponse | RPCErrorResponse
+export type RPCResponse = RPCSuccessResponse | RPCErrorResponse;
 
 type RPCRequestOptions = {
-  timeout?: number
-}
+  timeout?: number;
+};
 
 class ProviderRpcError extends Error {
   constructor(message: string, public code: number, public data?: unknown) {
-    super(message)
+    super(message);
   }
 }
 
 export async function request<T>(
   iframe: { contentWindow: Window },
-  { method, params }: Omit<RPCMessage, "jsonrpc" | "id">,
-  options: RPCRequestOptions = { timeout: 20000 }
+  { method, params }: Omit<RPCMessage, 'jsonrpc' | 'id'>,
+  options: RPCRequestOptions = {}
 ) {
-  const requestId = uuid.v4()
+  const requestId = uuid.v4();
   const req = {
-    jsonrpc: "2.0",
+    jsonrpc: '2.0',
     id: requestId,
     method,
     params,
-  }
-  console.debug("request", { ...req })
+  };
+  console.debug('request', { ...req });
 
   return new Promise<T>((resolve, reject) => {
-
-    const timeout = options.timeout && setTimeout(() => {
-      window.removeEventListener("message", handleEvent);
-      reject(new ProviderRpcError("Request timed out", 408))
-    }, options.timeout)
+    const timeout =
+      options.timeout &&
+      setTimeout(() => {
+        window.removeEventListener('message', handleEvent);
+        reject(new ProviderRpcError('Request timed out', 408));
+      }, options.timeout);
 
     const handleEvent = (event: MessageEvent) => {
       if (event.data && event.data.id === requestId) {
         resolve(event.data);
-        window.removeEventListener("message", handleEvent);
-        timeout && clearTimeout(timeout)
+        window.removeEventListener('message', handleEvent);
+        timeout && clearTimeout(timeout);
       }
-    }
+    };
 
-    window.addEventListener("message", handleEvent);
+    window.addEventListener('message', handleEvent);
 
-    iframe.contentWindow.postMessage(req, "*")
-  })
+    iframe.contentWindow.postMessage(req, '*');
+  });
 }
