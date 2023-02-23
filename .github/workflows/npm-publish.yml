@@ -10,6 +10,7 @@ on:
         options:
           - core
           - credentials
+          - embed
           - wallet
       level:
         type: choice
