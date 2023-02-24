@@ -13,12 +13,16 @@ export const baseStyle: Partial<CSSStyleDeclaration> = {
   background: 'white',
 };
 
-export const buildIframe = (onLoad: () => void) => {
+type BuildIframeArgs = {
+  origin: string;
+  onLoad: () => void;
+};
+
+export const buildIframe = ({ origin, onLoad }: BuildIframeArgs) => {
   console.debug('makeIframe');
-  const NFID_ORIGIN = 'http://localhost:9090';
   const REQ_ACCOUNTS = 'embed';
 
-  const PROVIDER_URL = new URL(`${NFID_ORIGIN}/${REQ_ACCOUNTS}`);
+  const PROVIDER_URL = new URL(`${origin}/${REQ_ACCOUNTS}`);
 
   const nfidIframe = document.createElement('iframe');
   nfidIframe.id = IFRAME_ID;
