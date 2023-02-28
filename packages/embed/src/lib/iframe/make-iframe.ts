@@ -25,8 +25,11 @@ export const buildIframe = ({ origin, onLoad }: BuildIframeArgs) => {
   const PROVIDER_URL = new URL(`${origin}/${REQ_ACCOUNTS}`);
 
   const nfidIframe = document.createElement('iframe');
+
   nfidIframe.id = IFRAME_ID;
   nfidIframe.src = PROVIDER_URL.href;
+  nfidIframe.allow = 'publickey-credentials-get';
+
   Object.assign(nfidIframe.style, baseStyle);
 
   nfidIframe.onload = onLoad;
