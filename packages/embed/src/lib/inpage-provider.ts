@@ -37,7 +37,8 @@ export class NFIDInpageProvider extends ethers.providers.JsonRpcProvider {
               response,
             });
             hideIframe();
-            return response.result ? response.result : response.error;
+            if (response.error) throw new Error(response.error.message);
+            return response.result;
           }
         );
       }
