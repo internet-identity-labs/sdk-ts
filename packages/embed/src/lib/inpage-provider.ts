@@ -14,7 +14,9 @@ export class NFIDInpageProvider extends ethers.providers.JsonRpcProvider {
   provider = this;
 
   constructor() {
-    super('https://ethereum-goerli-rpc.allthatnode.com');
+    super(
+      'https://eth-goerli.g.alchemy.com/v2/KII7f84ZxFDWMdnm_CNVW5hI8NfbnFhZ'
+    );
   }
 
   async request({
