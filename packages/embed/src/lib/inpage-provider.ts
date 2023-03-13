@@ -1,4 +1,5 @@
 import { ethers } from 'ethers';
+import { deepCopy } from '@ethersproject/properties';
 import { hideIframe, showIframe } from './iframe/mount-iframe';
 import { request } from './postmsg-rpc';
 import { getIframe } from './iframe/get-iframe';
@@ -9,14 +10,12 @@ export interface NFIDInpageProviderObservable {
   selectedAddress?: string;
 }
 
-export class NFIDInpageProvider extends ethers.providers.JsonRpcProvider {
+export class NFIDInpageProvider extends ethers.providers.AlchemyProvider {
   chainId = '0x5';
   provider = this;
 
-  constructor() {
-    super(
-      'https://eth-goerli.g.alchemy.com/v2/KII7f84ZxFDWMdnm_CNVW5hI8NfbnFhZ'
-    );
+  constructor(network: string, apiKey: string) {
+    super(network, apiKey);
   }
 
   async request({
@@ -26,6 +25,12 @@ export class NFIDInpageProvider extends ethers.providers.JsonRpcProvider {
     method: string;
     params: Array<any>;
   }): Promise<any> {
+    this.emit('debug', {
+      action: 'request',
+      request: deepCopy(request),
+      provider: this,
+    });
+
     console.debug('NFIDInpageProvider.request', { method, params });
     switch (method) {
       case 'eth_signTypedData_v4':
@@ -39,7 +44,22 @@ export class NFIDInpageProvider extends ethers.providers.JsonRpcProvider {
               response,
             });
             hideIframe();
-            if (response.error) throw new Error(response.error.message);
+            if (response.error) {
+              const error = new Error(response.error.message);
+              this.emit('debug', {
+                action: 'response',
+                error,
+                request,
+                provider: this,
+              });
+              throw error;
+            }
+            this.emit('debug', {
+              action: 'response',
+              request: request,
+              response: response.result,
+              provider: this,
+            });
             return response.result;
           }
         );

@@ -58,7 +58,7 @@ export const nfid = {
   async init({ origin = 'https://nfid.one' }: NFIDConfig) {
     console.debug('NFID.init', { origin });
 
-    const nfidInpageProvider = new NFIDInpageProvider();
+    const nfidInpageProvider = new NFIDInpageProvider('goerli', "Gvl6jhntAUlqmfKASgr4aYGG");
     return new Promise<boolean>((resolve) => {
       const nfidIframe = buildIframe({
         origin,
