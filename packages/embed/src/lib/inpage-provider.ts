@@ -30,6 +30,7 @@ export class NFIDInpageProvider extends ethers.providers.JsonRpcProvider {
     switch (method) {
       case 'eth_signTypedData_v4':
       case 'eth_sendTransaction':
+      case 'personal_sign':
       case 'eth_accounts': {
         const iframe = getIframe();
         showIframe();
