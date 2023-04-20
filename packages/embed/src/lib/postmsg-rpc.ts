@@ -1,5 +1,3 @@
-import * as uuid from 'uuid';
-
 export const RPC_BASE = { jsonrpc: '2.0' };
 
 interface RPCBase {
@@ -40,18 +38,9 @@ class ProviderRpcError extends Error {
 
 export async function request<T>(
   iframe: { contentWindow: Window },
-  { method, params }: Omit<RPCMessage, 'jsonrpc' | 'id'>,
+  req: RPCMessage,
   options: RPCRequestOptions = {}
 ) {
-  const requestId = uuid.v4();
-  const req = {
-    jsonrpc: '2.0',
-    id: requestId,
-    method,
-    params,
-  };
-  console.debug('request', { ...req });
-
   return new Promise<T>((resolve, reject) => {
     const timeout =
       options.timeout &&
@@ -61,7 +50,7 @@ export async function request<T>(
       }, options.timeout);
 
     const handleEvent = (event: MessageEvent) => {
-      if (event.data && event.data.id === requestId) {
+      if (event.data && event.data.id === req.id) {
         resolve(event.data);
         window.removeEventListener('message', handleEvent);
         timeout && clearTimeout(timeout);
