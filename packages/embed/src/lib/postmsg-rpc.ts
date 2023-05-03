@@ -30,6 +30,8 @@ export type RPCResponse = RPCSuccessResponse | RPCErrorResponse;
 
 type RPCRequestOptions = {
   timeout?: number;
+  chainId?: string,
+  rpcUrl?: string
 };
 
 class ProviderRpcError extends Error {
@@ -49,6 +51,7 @@ export async function request<T>(
     id: requestId,
     method,
     params,
+    options
   };
   console.debug('request', { ...req });
 

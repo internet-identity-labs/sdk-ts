@@ -3,10 +3,12 @@ import { first } from 'rxjs/operators';
 import { NFIDInpageProvider } from './inpage-provider';
 import { buildIframe } from './iframe/make-iframe';
 import { showIframe } from './iframe/mount-iframe';
+import { ethers } from 'ethers';
 
 type NFIDConfig = {
-  origin?: string;
-};
+	origin: string | undefined,
+	rpcUrl: string
+}
 
 interface NFIDObservable {
   origin?: string;
@@ -55,10 +57,12 @@ export const nfid = {
     return nfidBehaviorSubject$.value.isIframeInstantiated;
   },
 
-  async init({ origin = 'https://nfid.one' }: NFIDConfig) {
-    console.debug('NFID.init', { origin });
+  async init({ origin = 'https://nfid.one', rpcUrl }: NFIDConfig) {
+    console.debug('NFID.init', { origin, rpcUrl });
 
-    const nfidInpageProvider = new NFIDInpageProvider();
+    const provider = new ethers.providers.JsonRpcProvider(rpcUrl)
+    const chainId = (await provider.getNetwork()).chainId
+    const nfidInpageProvider = new NFIDInpageProvider(chainId, provider);
     return new Promise<boolean>((resolve) => {
       const nfidIframe = buildIframe({
         origin,
