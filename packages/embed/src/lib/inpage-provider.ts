@@ -9,7 +9,7 @@ export interface NFIDInpageProviderObservable {
   selectedAddress?: string;
 }
 
-const supportedChainIds = new Set(["0x1", "0x4", "0x5"])
+const supportedChainIds = new Set(["0x01", "0x04", "0x05"])
 
 export class NFIDInpageProvider {
   chainId: string;
@@ -17,7 +17,7 @@ export class NFIDInpageProvider {
 
   constructor(chainId: number, provider: ethers.providers.JsonRpcProvider) {
     const chainIdHex = ethers.utils.hexlify(chainId)
-    // this.checkChain(chainIdHex);
+    this.checkChain(chainIdHex);
     this.chainId = chainIdHex;
     this.provider = provider
   }
