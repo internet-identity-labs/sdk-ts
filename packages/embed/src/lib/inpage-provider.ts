@@ -9,14 +9,17 @@ export interface NFIDInpageProviderObservable {
   selectedAddress?: string;
 }
 
-export class NFIDInpageProvider extends ethers.providers.JsonRpcProvider {
-  chainId = '0x5';
-  provider = this;
+const supportedChainIds = new Set(["0x01", "0x04", "0x05"])
 
-  constructor() {
-    super(
-      'https://eth-goerli.g.alchemy.com/v2/KII7f84ZxFDWMdnm_CNVW5hI8NfbnFhZ'
-    );
+export class NFIDInpageProvider {
+  chainId: string;
+  provider: ethers.providers.JsonRpcProvider;
+
+  constructor(chainId: number, provider: ethers.providers.JsonRpcProvider) {
+    const chainIdHex = ethers.utils.hexlify(chainId)
+    this.checkChain(chainIdHex);
+    this.chainId = chainIdHex;
+    this.provider = provider
   }
 
   async request({
@@ -25,31 +28,43 @@ export class NFIDInpageProvider extends ethers.providers.JsonRpcProvider {
   }: {
     method: string;
     params: Array<any>;
-  }): Promise<any> {
-    console.debug('NFIDInpageProvider.request', { method, params });
-    switch (method) {
-      case 'eth_signTypedData_v4':
-      case 'eth_sendTransaction':
-      case 'personal_sign':
-      case 'eth_accounts': {
-        const iframe = getIframe();
-        showIframe();
-        return await request(iframe, { method, params }).then(
-          (response: any) => {
-            console.debug('NFIDInpageProvider.request eth_accounts', {
-              response,
-            });
-            hideIframe();
-            if (response.error) throw new Error(response.error.message);
-            return response.result;
-          }
-        );
+    }): Promise<any> {
+      console.debug('NFIDInpageProvider.request', { method, params });
+      switch (method) {
+        case 'eth_signTypedData_v4':
+        case 'eth_sendTransaction':
+        case 'personal_sign':
+        case 'eth_accounts': {
+          const meta = {chainId: this.chainId, rpcUrl: this.provider.connection.url }
+          return this.execRequest(method, params, meta);
       }
-
       default: {
         console.debug('NFIDInpageProvider.request default', { method, params });
-        return await this.send(method, params);
+        return await this.provider.send(method, params);
       }
+    }
+  }
+
+  private async execRequest(method: string, params: Array<any>, meta: {chainId: string, rpcUrl: string}): Promise<any> {
+    const iframe = getIframe()
+    showIframe()
+    return await request(iframe, { method, params }, meta).then((response: any) => {
+      console.debug('NFIDInpageProvider.request', {
+        response,
+      })
+
+      hideIframe()
+
+      if (response.error)
+        throw new Error(response.error.message)
+
+      return response.result
+    });
+  }
+
+  private checkChain(chainId: string): void {
+    if (!supportedChainIds.has(chainId)) {
+      throw Error(`The chainid ${chainId} is not supported.`);
     }
   }
 }
