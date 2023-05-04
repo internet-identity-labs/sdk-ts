@@ -9,7 +9,12 @@ export interface NFIDInpageProviderObservable {
   selectedAddress?: string;
 }
 
-const supportedChainIds = new Set(["0x01", "0x04", "0x05"])
+const supportedChainIds = new Set([
+  "0x01", // Ethereum Mainnet
+  "0x05", // Ethereum Goerli Testnet
+  "0x89", // Polygon Mainnet
+  "0x013881" // Polygon Mumbai Testnet
+])
 
 export class NFIDInpageProvider {
   chainId: string;
