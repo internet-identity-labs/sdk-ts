@@ -12,6 +12,7 @@ on:
           - credentials
           - embed
           - wallet
+          - iframe-auth
       level:
         type: choice
         description: Select the release update level
