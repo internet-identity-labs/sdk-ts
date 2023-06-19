@@ -11,6 +11,7 @@ export default {
       },
     ],
   },
+  setupFilesAfterEnv: ['./src/setupTests.ts'],
   moduleFileExtensions: ['ts', 'js', 'html'],
   coverageDirectory: '../../coverage/packages/embed',
 };
