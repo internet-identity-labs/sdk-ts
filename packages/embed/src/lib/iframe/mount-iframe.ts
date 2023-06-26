@@ -17,8 +17,8 @@ export const showIframe = async () => {
   if (!iframe) return;
   console.debug('showIframe', { iframe });
   Object.assign(iframe.style, {
-    display: 'block',
     ...baseStyle,
+    display: 'block',
   });
 };
 
@@ -27,7 +27,7 @@ export const hideIframe = async () => {
   if (!iframe) return;
   console.debug('hideIframe', { iframe });
   Object.assign(iframe.style, {
-    display: 'none',
     ...baseStyle,
+    display: 'none',
   });
 };
