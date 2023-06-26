@@ -1,3 +1,4 @@
+import { DelegationIdentity } from '@dfinity/identity/lib/cjs/identity/delegation';
 import * as uuid from 'uuid';
 
 export const RPC_BASE = { jsonrpc: '2.0' };
@@ -28,10 +29,17 @@ interface RPCErrorResponse extends RPCBase {
 
 export type RPCResponse = RPCSuccessResponse | RPCErrorResponse;
 
-type RPCRequestOptions = {
+type RPCRequestMetadata = {
   timeout?: number;
-  chainId?: string,
-  rpcUrl?: string
+  chainId?: string;
+  rpcUrl?: string;
+};
+
+type Method = 'ic_getDelegation' /* add more method names as needed */;
+
+type MethodToReturnType = {
+  ic_getDelegation: DelegationIdentity;
+  // Define return types for other methods here
 };
 
 class ProviderRpcError extends Error {
@@ -40,10 +48,10 @@ class ProviderRpcError extends Error {
   }
 }
 
-export async function request<T>(
+export async function request<T extends Method>(
   iframe: { contentWindow: Window },
   { method, params }: Omit<RPCMessage, 'jsonrpc' | 'id'>,
-  options: RPCRequestOptions = {}
+  options: RPCRequestMetadata = {}
 ) {
   const requestId = uuid.v4();
   const req = {
@@ -51,11 +59,11 @@ export async function request<T>(
     id: requestId,
     method,
     params,
-    options
+    options,
   };
   console.debug('request', { ...req });
 
-  return new Promise<T>((resolve, reject) => {
+  return new Promise<MethodToReturnType[T]>((resolve, reject) => {
     const timeout =
       options.timeout &&
       setTimeout(() => {
