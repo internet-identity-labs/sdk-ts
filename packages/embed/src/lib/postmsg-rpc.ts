@@ -38,7 +38,7 @@ type RPCRequestMetadata = {
 type Method = 'ic_getDelegation' /* add more method names as needed */;
 
 type MethodToReturnType = {
-  ic_getDelegation: DelegationIdentity;
+  ic_getDelegation: any;
   // Define return types for other methods here
 };
 
