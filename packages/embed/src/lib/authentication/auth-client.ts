@@ -187,6 +187,35 @@ export class NfidAuthClient {
     }
   }
 
+  public async renewDelegation(options?: {
+    /**
+     * Expiration of the authentication in nanoseconds
+     * @default  BigInt(8) hours * BigInt(3_600_000_000_000) nanoseconds
+     */
+    maxTimeToLive?: bigint;
+    /**
+     * Callback once login has completed
+     */
+    onSuccess?: (() => void) | (() => Promise<void>);
+    targets: string[];
+  }): Promise<Identity> {
+    // Set default maxTimeToLive to 8 hours
+    const defaultTimeToLive = /* hours */ BigInt(8) * /* nanoseconds */ BigInt(3_600_000_000_000);
+
+    const iframe = getIframe();
+    const response = await request(iframe, {
+      method: 'ic_renewDelegation',
+      params: [
+        {
+          sessionPublicKey: new Uint8Array(this._key?.getPublicKey().toDer() as ArrayBuffer),
+          maxTimeToLive: options?.maxTimeToLive ?? defaultTimeToLive,
+          targets: options?.targets,
+        },
+      ],
+    });
+    return this._handleSuccess(response.result)
+  }
+
   public async login(options?: {
     /**
      * Expiration of the authentication in nanoseconds
