@@ -1,4 +1,5 @@
 import { DelegationIdentity } from '@dfinity/identity/lib/cjs/identity/delegation';
+import { Principal } from '@dfinity/principal';
 import * as uuid from 'uuid';
 
 export const RPC_BASE = { jsonrpc: '2.0' };
@@ -37,8 +38,22 @@ type RPCRequestMetadata = {
 
 type Method = 'ic_getDelegation' /* add more method names as needed */;
 
+export type NFIDDelegationResult = {
+  delegations: {
+    delegation: {
+      pubkey: Uint8Array;
+      expiration: bigint;
+      targets?: Principal[];
+    };
+    signature: Uint8Array;
+  }[];
+  userPublicKey: Uint8Array
+}
+
 type MethodToReturnType = {
-  ic_getDelegation: any;
+  ic_getDelegation: {
+    result: NFIDDelegationResult
+  };
   // Define return types for other methods here
 };
 
