@@ -269,7 +269,7 @@ export class NfidAuthClient {
             this._key?.getPublicKey().toDer() as ArrayBuffer
           ),
           maxTimeToLive: options?.maxTimeToLive ?? defaultTimeToLive,
-          targets: ['a', 'b', 'c'],
+          targets: ['txkre-oyaaa-aaaap-qa3za-cai'],
         },
       ],
     });
