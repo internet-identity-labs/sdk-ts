@@ -118,6 +118,7 @@ export const nfid = {
           ...nfidBehaviorSubject$.value,
           isAuthenticated: true,
         });
+        hideIframe();
         resolve(true);
       });
     });
@@ -185,6 +186,33 @@ export class NFID {
         hideIframe();
       });
     });
+  }
+
+  async requestTransfer({
+    receiver,
+    amount,
+    sourceAddress,
+  }: {
+    receiver: string;
+    amount: string;
+    sourceAddress: string;
+  }) {
+    console.log('NFID.requestTransfer');
+    if (!NFID.nfidIframe) throw new Error('NFID iframe not instantiated');
+    showIframe();
+    const iframe = getIframe();
+    const response = await request(iframe, {
+      method: 'ic_requestTransfer',
+      params: [
+        {
+          receiver,
+          amount,
+          sourceAddress,
+        },
+      ],
+    });
+    hideIframe();
+    return response.result;
   }
 
   public get isAuthenticated() {
