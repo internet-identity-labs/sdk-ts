@@ -1,7 +1,7 @@
 {
   "name": "nfid",
   "license": "MIT",
-  "version": "0.1.0",
+  "version": "0.0.8-alpha.0",
   "scripts": {
     "postinstall": "npx patch-package",
     "build": "npx nx build",
