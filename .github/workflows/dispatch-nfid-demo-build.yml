@@ -2,11 +2,23 @@ name: Dispatch NFID DEMO BUILD
 
 on:
   workflow_dispatch:
-  # push:
-  #   branches:
-  #     - main
-
-jobs:
-  call-nfid-frontend-release-dev:
-    uses: internet-identity-labs/nfid-frontend/.github/workflows/release-dev.yml@feature/sc-8550
+  push:
+    branches:
+      - main
   
+jobs:
+  trigger_workflow:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Pause for 15 seconds for canceling
+        run: |
+          sleep 15
+
+      - name: Run NFID-DEMO workflow.
+        uses: convictional/trigger-workflow-and-wait@v1.6.5
+        with:
+          owner: internet-identity-labs
+          repo: nfid-frontend
+          workflow_file_name: release-dev.yml
+          github_token: ${{ secrets.TRIGGER_SDK_PLAYGROUND_PAT }}
+          comment_downstream_url: ${{ github.event.head_commit.message }}
