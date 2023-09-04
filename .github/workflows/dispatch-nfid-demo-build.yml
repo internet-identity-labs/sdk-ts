@@ -1,0 +1,12 @@
+name: Dispatch NFID DEMO BUILD
+
+on:
+  workflow_dispatch:
+  # push:
+  #   branches:
+  #     - main
+
+jobs:
+  call-nfid-frontend-release-dev:
+    uses: internet-identity-labs/nfid-frontend/.github/workflows/release-dev.yml@feature/sc-8550
+  
