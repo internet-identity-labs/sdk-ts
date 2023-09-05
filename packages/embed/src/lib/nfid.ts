@@ -13,7 +13,8 @@ import {
   Ed25519KeyIdentity,
 } from '@dfinity/identity';
 import { getIframe } from './iframe/get-iframe';
-import { DerEncodedPublicKey } from '@dfinity/agent';
+import { DerEncodedPublicKey, Identity } from '@dfinity/agent';
+import { NfidAuthClient } from './authentication';
 
 type NFIDConfig = {
   origin: string | undefined;
@@ -128,74 +129,33 @@ export const nfid = {
 };
 
 export class NFID {
-  public isAuthenticated = false;
-  public isIframeInstantiated = false;
+  static _authClient: NfidAuthClient
+  static isAuthenticated = false;
+  static isIframeInstantiated = false;
 
-  private nfidIframe?: HTMLIFrameElement;
+  static nfidIframe?: HTMLIFrameElement;
 
   constructor(public nfidOrigin: string) {
-    this.initIframe(nfidOrigin);
   }
 
   // Move to iFrameManager? Separate class?
-  async initIframe(origin: string) {
+  static async initIframe(origin: string) {
     return new Promise<boolean>((resolve) => {
       const nfidIframe = buildIframe({
         origin,
         onLoad: () => {
-          this.isIframeInstantiated = true;
-          this.nfidIframe = nfidIframe;
+          NFID.isIframeInstantiated = true;
+          NFID.nfidIframe = nfidIframe;
           resolve(true);
         },
       });
     });
   }
 
-  static init({ origin = 'https://nfid.one' }: NFIDConfig) {
+  static async init({ origin = 'https://nfid.one' }: NFIDConfig) {
+    await NFID.initIframe(origin);
+    NFID._authClient = await NfidAuthClient.create()
     return new this(origin);
-  }
-
-  async getDelegation() {
-    console.debug('NFID.getDelegation');
-    const iframe = getIframe();
-    const sessionKey = Ed25519KeyIdentity.generate();
-    const response = await request(iframe, {
-      method: 'ic_getDelegation',
-      params: [
-        {
-          sessionPublicKey: new Uint8Array(
-            sessionKey.getPublicKey().toDer() as ArrayBuffer
-          ),
-          maxTimeToLive: BigInt(Date.now() + 6 * 30 * 24 * 60 * 60 * 1e9),
-          targets: ['a', 'b', 'c'],
-        },
-      ],
-    });
-    console.debug('NFID.getDelegation', { response });
-    const delegations = response.result.delegations.map(
-      (signedDelegation: any) => {
-        return {
-          delegation: new Delegation(
-            signedDelegation.delegation.pubkey,
-            signedDelegation.delegation.expiration,
-            signedDelegation.delegation.targets
-          ),
-          signature: signedDelegation.signature.buffer as Signature,
-        };
-      }
-    );
-    const delegationChain = DelegationChain.fromDelegations(
-      delegations,
-      response.result.userPublicKey.buffer as DerEncodedPublicKey
-    );
-    const identity = DelegationIdentity.fromDelegation(
-      sessionKey,
-      delegationChain
-    );
-    console.debug('NFID.getDelegation: identity', {
-      principalId: identity.getPrincipal().toString(),
-    });
-    hideIframe();
   }
 
   async renewDelegation() {
@@ -215,23 +175,34 @@ export class NFID {
     });
   }
 
-  async connect() {
+  async getDelegation() {
     console.log('NFID.connect');
-    if (!this.nfidIframe) throw new Error('NFID iframe not instantiated');
+    if (!NFID.nfidIframe) throw new Error('NFID iframe not instantiated');
     showIframe();
-    return new Promise<boolean>((resolve) => {
+    return new Promise<Identity>((resolve) => {
       const source = fromEvent(window, 'message');
       const events = source.pipe(
         first(
           (event: any) => event.data && event.data.type === 'nfid_authenticated'
         )
       );
-      events.subscribe(() => {
+      events.subscribe(async () => {
         console.debug('NFID.connect: authenticated');
-        this.isAuthenticated = true;
-        this.getDelegation();
-        resolve(true);
+        NFID.isAuthenticated = true;
+        ;
+        const identity = await NFID._authClient.login()
+        resolve(identity);
+        hideIframe()
       });
     });
+  }
+
+
+  public get isAuthenticated () {
+    return NFID._authClient.isAuthenticated
+  }
+
+  public getIdentity () {
+    return NFID._authClient.getIdentity()
   }
 }
