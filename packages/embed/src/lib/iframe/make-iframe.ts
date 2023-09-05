@@ -1,4 +1,5 @@
 import { IFRAME_ID } from './constants';
+import { getIframe } from './get-iframe';
 
 export const baseStyle: Partial<CSSStyleDeclaration> = {
   position: 'absolute',
@@ -11,6 +12,7 @@ export const baseStyle: Partial<CSSStyleDeclaration> = {
   zIndex: '10',
   boxShadow: '0px 0px 60px 0px rgba(48,139,245,0.56)',
   background: 'white',
+  display: 'none',
 };
 
 type BuildIframeArgs = {
@@ -24,7 +26,12 @@ export const buildIframe = ({ origin, onLoad }: BuildIframeArgs) => {
 
   const PROVIDER_URL = new URL(`${origin}/${REQ_ACCOUNTS}`);
 
-  const nfidIframe = document.createElement('iframe');
+  let nfidIframe;
+  try {
+    nfidIframe = getIframe();
+  } catch (e) {
+    nfidIframe = document.createElement('iframe');
+  }
 
   nfidIframe.id = IFRAME_ID;
   nfidIframe.src = PROVIDER_URL.href;
