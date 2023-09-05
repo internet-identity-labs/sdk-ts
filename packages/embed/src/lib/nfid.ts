@@ -129,14 +129,11 @@ export const nfid = {
 };
 
 export class NFID {
-  static _authClient: NfidAuthClient
+  static _authClient: NfidAuthClient;
   static isAuthenticated = false;
   static isIframeInstantiated = false;
 
   static nfidIframe?: HTMLIFrameElement;
-
-  constructor(public nfidOrigin: string) {
-  }
 
   // Move to iFrameManager? Separate class?
   static async initIframe(origin: string) {
@@ -154,27 +151,16 @@ export class NFID {
 
   static async init({ origin = 'https://nfid.one' }: NFIDConfig) {
     await NFID.initIframe(origin);
-    NFID._authClient = await NfidAuthClient.create()
-    return new this(origin);
+    NFID._authClient = await NfidAuthClient.create();
   }
 
   async renewDelegation() {
     console.log('NFID.renewDelegation');
-    if (!NFID.nfidIframe) throw new Error('NFID iframe not instantiated');
-
-    return new Promise<Identity>((resolve) => {
-      const source = fromEvent(window, 'message');
-      const events = source.pipe(
-        first(
-          (event: any) => event.data && event.data.type === 'nfid_authenticated'
-        )
-      );
-      events.subscribe(async () => {
-        console.debug('NFID.connect: authenticated');
-        const identity = await NFID._authClient.renewDelegation({targets: ['a', 'b', 'c']})
-        resolve(identity);
-      });
+    const response = await NFID._authClient.renewDelegation({
+      targets: ['a', 'b', 'c'],
     });
+    console.debug('NFID.renewDelegation', { response });
+    return response;
   }
 
   async getDelegation() {
@@ -191,20 +177,18 @@ export class NFID {
       events.subscribe(async () => {
         console.debug('NFID.connect: authenticated');
         NFID.isAuthenticated = true;
-        ;
-        const identity = await NFID._authClient.login()
+        const identity = await NFID._authClient.login();
         resolve(identity);
-        hideIframe()
+        hideIframe();
       });
     });
   }
 
-
-  public get isAuthenticated () {
-    return NFID._authClient.isAuthenticated
+  public get isAuthenticated() {
+    return NFID._authClient.isAuthenticated;
   }
 
-  public getIdentity () {
-    return NFID._authClient.getIdentity()
+  public getIdentity() {
+    return NFID._authClient.getIdentity();
   }
 }

@@ -1,6 +1,23 @@
-import { SignIdentity, AnonymousIdentity, Identity, Signature, DerEncodedPublicKey } from '@dfinity/agent';
-import { AuthClient, AuthClientCreateOptions, IdleManager, IdleOptions } from '@dfinity/auth-client';
-import { Ed25519KeyIdentity, DelegationChain, DelegationIdentity, ECDSAKeyIdentity, isDelegationValid, Delegation } from '@dfinity/identity';
+import {
+  SignIdentity,
+  AnonymousIdentity,
+  Identity,
+  Signature,
+  DerEncodedPublicKey,
+} from '@dfinity/agent';
+import {
+  AuthClientCreateOptions,
+  IdleManager,
+  IdleOptions,
+} from '@dfinity/auth-client';
+import {
+  Ed25519KeyIdentity,
+  DelegationChain,
+  DelegationIdentity,
+  ECDSAKeyIdentity,
+  isDelegationValid,
+  Delegation,
+} from '@dfinity/identity';
 import {
   AuthClientStorage,
   IdbStorage,
@@ -10,23 +27,16 @@ import {
   KEY_VECTOR,
   LocalStorage,
 } from './storage';
-import { captureRejectionSymbol } from 'events';
 import { getIframe } from '../iframe/get-iframe';
 import { NFIDDelegationResult, request } from '../postmsg-rpc';
-
-const IDENTITY_PROVIDER_DEFAULT = 'https://identity.ic0.app';
-const IDENTITY_PROVIDER_ENDPOINT = '#authorize';
 
 const ECDSA_KEY_LABEL = 'ECDSA';
 const ED25519_KEY_LABEL = 'Ed25519';
 type BaseKeyType = typeof ECDSA_KEY_LABEL | typeof ED25519_KEY_LABEL;
 
-const INTERRUPT_CHECK_INTERVAL = 500;
-
 export const ERROR_USER_INTERRUPT = 'UserInterrupt';
 
 export class NfidAuthClient {
-
   public static async create(
     options: {
       /**
@@ -51,9 +61,9 @@ export class NfidAuthClient {
        * @default after 10 minutes, invalidates the identity
        */
       idleOptions?: IdleOptions;
-    } = {},
+    } = {}
   ): Promise<NfidAuthClient> {
-    console.log("NfidAuthClient")
+    console.log('NfidAuthClient');
     const storage = options.storage ?? new IdbStorage();
     const keyType = options.keyType ?? ECDSA_KEY_LABEL;
 
@@ -66,11 +76,15 @@ export class NfidAuthClient {
         // Attempt to migrate from localstorage
         try {
           const fallbackLocalStorage = new LocalStorage();
-          const localChain = await fallbackLocalStorage.get(KEY_STORAGE_DELEGATION);
+          const localChain = await fallbackLocalStorage.get(
+            KEY_STORAGE_DELEGATION
+          );
           const localKey = await fallbackLocalStorage.get(KEY_STORAGE_KEY);
           // not relevant for Ed25519
           if (localChain && localKey && keyType === ECDSA_KEY_LABEL) {
-            console.log('Discovered an identity stored in localstorage. Migrating to IndexedDB');
+            console.log(
+              'Discovered an identity stored in localstorage. Migrating to IndexedDB'
+            );
             await storage.set(KEY_STORAGE_DELEGATION, localChain);
             await storage.set(KEY_STORAGE_KEY, localKey);
 
@@ -80,13 +94,18 @@ export class NfidAuthClient {
             await fallbackLocalStorage.remove(KEY_STORAGE_KEY);
           }
         } catch (error) {
-          console.error('error while attempting to recover localstorage: ' + error);
+          console.error(
+            'error while attempting to recover localstorage: ' + error
+          );
         }
       }
       if (maybeIdentityStorage) {
         try {
           if (typeof maybeIdentityStorage === 'object') {
-            if (keyType === ED25519_KEY_LABEL && typeof maybeIdentityStorage === 'string') {
+            if (
+              keyType === ED25519_KEY_LABEL &&
+              typeof maybeIdentityStorage === 'string'
+            ) {
               key = await Ed25519KeyIdentity.fromJSON(maybeIdentityStorage);
             } else {
               key = await ECDSAKeyIdentity.fromKeyPair(maybeIdentityStorage);
@@ -109,7 +128,7 @@ export class NfidAuthClient {
         const chainStorage = await storage.get(KEY_STORAGE_DELEGATION);
         if (typeof chainStorage === 'object' && chainStorage !== null) {
           throw new Error(
-            'Delegation chain is incorrectly stored. A delegation chain should be stored as a string.',
+            'Delegation chain is incorrectly stored. A delegation chain should be stored as a string.'
           );
         }
 
@@ -146,15 +165,21 @@ export class NfidAuthClient {
       // Create a new key (whether or not one was in storage).
       if (keyType === ED25519_KEY_LABEL) {
         key = await Ed25519KeyIdentity.generate();
-        await storage.set(KEY_STORAGE_KEY, JSON.stringify((key as Ed25519KeyIdentity).toJSON()));
+        await storage.set(
+          KEY_STORAGE_KEY,
+          JSON.stringify((key as Ed25519KeyIdentity).toJSON())
+        );
       } else {
         if (options.storage && keyType === ECDSA_KEY_LABEL) {
           console.warn(
-            `You are using a custom storage provider that may not support CryptoKey storage. If you are using a custom storage provider that does not support CryptoKey storage, you should use '${ED25519_KEY_LABEL}' as the key type, as it can serialize to a string`,
+            `You are using a custom storage provider that may not support CryptoKey storage. If you are using a custom storage provider that does not support CryptoKey storage, you should use '${ED25519_KEY_LABEL}' as the key type, as it can serialize to a string`
           );
         }
         key = await ECDSAKeyIdentity.generate();
-        await storage.set(KEY_STORAGE_KEY, (key as ECDSAKeyIdentity).getKeyPair());
+        await storage.set(
+          KEY_STORAGE_KEY,
+          (key as ECDSAKeyIdentity).getKeyPair()
+        );
       }
     }
 
@@ -171,7 +196,7 @@ export class NfidAuthClient {
     // A handle on the IdP window.
     private _idpWindow?: Window,
     // The event handler for processing events from the IdP.
-    private _eventHandler?: (event: MessageEvent) => void,
+    private _eventHandler?: (event: MessageEvent) => void
   ) {
     const logout = this.logout.bind(this);
     const idleOptions = _createOptions?.idleOptions;
@@ -198,22 +223,26 @@ export class NfidAuthClient {
      */
     onSuccess?: (() => void) | (() => Promise<void>);
     targets: string[];
-  }): Promise<Identity> {
+  }): Promise<any> {
     // Set default maxTimeToLive to 8 hours
-    const defaultTimeToLive = /* hours */ BigInt(8) * /* nanoseconds */ BigInt(3_600_000_000_000);
+    const defaultTimeToLive =
+      /* hours */ BigInt(8) * /* nanoseconds */ BigInt(3_600_000_000_000);
 
     const iframe = getIframe();
     const response = await request(iframe, {
       method: 'ic_renewDelegation',
       params: [
         {
-          sessionPublicKey: new Uint8Array(this._key?.getPublicKey().toDer() as ArrayBuffer),
+          sessionPublicKey: new Uint8Array(
+            this._key?.getPublicKey().toDer() as ArrayBuffer
+          ),
           maxTimeToLive: options?.maxTimeToLive ?? defaultTimeToLive,
           targets: options?.targets,
         },
       ],
     });
-    return this._handleSuccess(response.result)
+    // return this._handleSuccess(response.result)
+    return response.result;
   }
 
   public async login(options?: {
@@ -228,20 +257,23 @@ export class NfidAuthClient {
     onSuccess?: (() => void) | (() => Promise<void>);
   }): Promise<Identity> {
     // Set default maxTimeToLive to 8 hours
-    const defaultTimeToLive = /* hours */ BigInt(8) * /* nanoseconds */ BigInt(3_600_000_000_000);
+    const defaultTimeToLive =
+      /* hours */ BigInt(8) * /* nanoseconds */ BigInt(3_600_000_000_000);
 
     const iframe = getIframe();
     const response = await request(iframe, {
       method: 'ic_getDelegation',
       params: [
         {
-          sessionPublicKey: new Uint8Array(this._key?.getPublicKey().toDer() as ArrayBuffer),
+          sessionPublicKey: new Uint8Array(
+            this._key?.getPublicKey().toDer() as ArrayBuffer
+          ),
           maxTimeToLive: options?.maxTimeToLive ?? defaultTimeToLive,
           targets: ['a', 'b', 'c'],
         },
       ],
     });
-    return this._handleSuccess(response.result)
+    return this._handleSuccess(response.result);
   }
 
   public async logout(options: { returnTo?: string } = {}): Promise<void> {
@@ -265,29 +297,33 @@ export class NfidAuthClient {
   }
 
   public get isAuthenticated() {
-    return !this.getIdentity().getPrincipal().isAnonymous() && this._chain !== null;
+    return (
+      !this.getIdentity().getPrincipal().isAnonymous() && this._chain !== null
+    );
   }
 
   private async _handleSuccess(nfidDelegationResult: NFIDDelegationResult) {
-    const delegations = nfidDelegationResult.delegations.map(signedDelegation => {
-      return {
-        delegation: new Delegation(
-          signedDelegation.delegation.pubkey,
-          signedDelegation.delegation.expiration,
-          signedDelegation.delegation.targets,
-        ),
-        signature: signedDelegation.signature.buffer as Signature,
-      };
-    });
+    const delegations = nfidDelegationResult.delegations.map(
+      (signedDelegation) => {
+        return {
+          delegation: new Delegation(
+            signedDelegation.delegation.pubkey,
+            signedDelegation.delegation.expiration,
+            signedDelegation.delegation.targets
+          ),
+          signature: signedDelegation.signature.buffer as Signature,
+        };
+      }
+    );
 
     const delegationChain = DelegationChain.fromDelegations(
       delegations,
-      nfidDelegationResult.userPublicKey.buffer as DerEncodedPublicKey,
+      nfidDelegationResult.userPublicKey.buffer as DerEncodedPublicKey
     );
 
     const key = this._key;
     if (!key) {
-      throw new Error("missing key");
+      throw new Error('missing key');
     }
 
     this._chain = delegationChain;
@@ -306,10 +342,13 @@ export class NfidAuthClient {
     }
 
     if (this._chain) {
-      await this._storage.set(KEY_STORAGE_DELEGATION, JSON.stringify(this._chain.toJSON()));
+      await this._storage.set(
+        KEY_STORAGE_DELEGATION,
+        JSON.stringify(this._chain.toJSON())
+      );
     }
 
-    return this._identity
+    return this._identity;
   }
 }
 

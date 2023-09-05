@@ -47,12 +47,12 @@ export type NFIDDelegationResult = {
     };
     signature: Uint8Array;
   }[];
-  userPublicKey: Uint8Array
-}
+  userPublicKey: Uint8Array;
+};
 
 type MethodToReturnType = {
   ic_getDelegation: {
-    result: NFIDDelegationResult
+    result: NFIDDelegationResult;
   };
   // Define return types for other methods here
 };
@@ -88,6 +88,7 @@ export async function request<T extends Method>(
 
     const handleEvent = (event: MessageEvent) => {
       if (event.data && event.data.id === requestId) {
+        console.debug(`resolve id: ${requestId}`, { event });
         resolve(event.data);
         window.removeEventListener('message', handleEvent);
         timeout && clearTimeout(timeout);
