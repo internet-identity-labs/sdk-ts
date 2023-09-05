@@ -223,7 +223,7 @@ export class NfidAuthClient {
      */
     onSuccess?: (() => void) | (() => Promise<void>);
     targets: string[];
-  }): Promise<any> {
+  }) {
     // Set default maxTimeToLive to 8 hours
     const defaultTimeToLive =
       /* hours */ BigInt(8) * /* nanoseconds */ BigInt(3_600_000_000_000);
@@ -241,8 +241,7 @@ export class NfidAuthClient {
         },
       ],
     });
-    // return this._handleSuccess(response.result)
-    return response.result;
+    return this._handleSuccess(response.result);
   }
 
   public async login(options?: {
@@ -251,6 +250,11 @@ export class NfidAuthClient {
      * @default  BigInt(8) hours * BigInt(3_600_000_000_000) nanoseconds
      */
     maxTimeToLive?: bigint;
+    /**
+     * Target canisterIds
+     * @default  undefined
+     */
+    targets?: string[];
     /**
      * Callback once login has completed
      */
@@ -269,7 +273,7 @@ export class NfidAuthClient {
             this._key?.getPublicKey().toDer() as ArrayBuffer
           ),
           maxTimeToLive: options?.maxTimeToLive ?? defaultTimeToLive,
-          targets: ['txkre-oyaaa-aaaap-qa3za-cai'],
+          ...(options?.targets ? { targets: options.targets } : {}),
         },
       ],
     });

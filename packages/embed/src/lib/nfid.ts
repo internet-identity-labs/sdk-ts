@@ -158,34 +158,47 @@ export class NFID {
     return new this(origin);
   }
 
-  async renewDelegation() {
+  async renewDelegation({ targets }: { targets: string[] }) {
     console.log('NFID.renewDelegation');
     const response = await NFID._authClient.renewDelegation({
-      targets: ['txkre-oyaaa-aaaap-qa3za-cai'],
+      targets,
     });
     console.debug('NFID.renewDelegation', { response });
     return response;
   }
 
-  async getDelegation() {
-    console.log('NFID.connect');
+  async getDelegation(options?: { targets?: string[] }) {
+    console.debug('NFID.connect');
     if (!NFID.nfidIframe) throw new Error('NFID iframe not instantiated');
     showIframe();
     return new Promise<Identity>((resolve) => {
       const source = fromEvent(window, 'message');
-      const events = source.pipe(
-        first(
-          (event: any) => event.data && event.data.type === 'nfid_authenticated'
-        )
-      );
-      events.subscribe(async () => {
-        console.debug('NFID.connect: authenticated');
-        NFID.isAuthenticated = true;
-        const identity = await NFID._authClient.login();
-        resolve(identity);
-        hideIframe();
-      });
+      if (!NFID.isAuthenticated) {
+        console.debug('NFID.connect: not authenticated');
+        const events = source.pipe(
+          first(
+            (event: any) =>
+              event.data && event.data.type === 'nfid_authenticated'
+          )
+        );
+        events.subscribe(async () => {
+          console.debug('NFID.connect: authenticated');
+          NFID.isAuthenticated = true;
+          const identity = await NFID._authClient.login(options);
+          resolve(identity);
+          hideIframe();
+        });
+      } else {
+        console.debug('NFID.connect: already authenticated');
+        NFID._authClient.login(options).then((identity) => {
+          resolve(identity);
+          hideIframe();
+        });
+      }
     });
+  }
+  async logout() {
+    return NFID._authClient.logout();
   }
 
   async requestTransfer({
