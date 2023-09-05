@@ -3,17 +3,9 @@ import { first } from 'rxjs/operators';
 import { NFIDEthInpageProvider } from './inpage-provider/eth';
 import { buildIframe } from './iframe/make-iframe';
 import { hideIframe, showIframe } from './iframe/mount-iframe';
-import { Signature, ethers } from 'ethers';
+import { ethers } from 'ethers';
 import { NFIDIcInpageProvider } from './inpage-provider/ic';
-import { request } from './postmsg-rpc';
-import {
-  Delegation,
-  DelegationChain,
-  DelegationIdentity,
-  Ed25519KeyIdentity,
-} from '@dfinity/identity';
-import { getIframe } from './iframe/get-iframe';
-import { DerEncodedPublicKey, Identity } from '@dfinity/agent';
+import { Identity } from '@dfinity/agent';
 import { NfidAuthClient } from './authentication';
 
 type NFIDConfig = {
