@@ -1,19 +1,20 @@
 import { fromEvent, BehaviorSubject } from 'rxjs';
 import { first } from 'rxjs/operators';
-import { NFIDInpageProvider } from './inpage-provider';
+import { NFIDEthInpageProvider } from './inpage-provider/eth';
 import { buildIframe } from './iframe/make-iframe';
 import { showIframe } from './iframe/mount-iframe';
 import { ethers } from 'ethers';
+import { NFIDIcInpageProvider } from './inpage-provider/ic';
 
 type NFIDConfig = {
-	origin: string | undefined,
-	rpcUrl: string
-}
+  origin: string | undefined;
+  rpcUrl: string;
+};
 
 interface NFIDObservable {
   origin?: string;
-  ethereum?: NFIDInpageProvider;
-  provider?: NFIDInpageProvider;
+  provider?: NFIDEthInpageProvider;
+  ic?: NFIDIcInpageProvider;
   nfidIframe?: HTMLIFrameElement;
   isAuthenticated: boolean;
   isIframeInstantiated: boolean;
@@ -36,19 +37,27 @@ nfidBehaviorSubject$.subscribe({
   },
 });
 
-export interface NFID extends NFIDObservable {
-  provider?: NFIDInpageProvider;
-  ethereum?: NFIDInpageProvider;
-  init({ origin }: NFIDConfig): Promise<boolean>;
-  disconnect(): Promise<void>;
-}
+const initProvider = async (rpcUrl: string) => {
+  const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
+  const chainId = (await provider.getNetwork()).chainId;
+  const nfidInpageProvider = new NFIDEthInpageProvider(chainId, provider);
+  const icInpageProvider = new NFIDIcInpageProvider();
+
+  nfidBehaviorSubject$.next({
+    ...nfidBehaviorSubject$.value,
+    provider: nfidInpageProvider,
+    ic: icInpageProvider,
+  });
+
+  return;
+};
 
 export const nfid = {
   get provider() {
     return nfidBehaviorSubject$.value.provider;
   },
-  get ethereum() {
-    return nfidBehaviorSubject$.value.ethereum;
+  get ic() {
+    return nfidBehaviorSubject$.value.ic;
   },
   get isAuthenticated() {
     return nfidBehaviorSubject$.value.isAuthenticated;
@@ -60,20 +69,17 @@ export const nfid = {
   async init({ origin = 'https://nfid.one', rpcUrl }: NFIDConfig) {
     console.debug('NFID.init', { origin, rpcUrl });
 
-    const provider = new ethers.providers.JsonRpcProvider(rpcUrl)
-    const chainId = (await provider.getNetwork()).chainId
-    const nfidInpageProvider = new NFIDInpageProvider(chainId, provider);
+    await initProvider(rpcUrl);
+
+    console.debug('NFID.init: inpage providers instantiated');
     return new Promise<boolean>((resolve) => {
       const nfidIframe = buildIframe({
         origin,
         onLoad: () => {
-          nfidIframe.style.display = 'block';
           nfidBehaviorSubject$.next({
             ...nfidBehaviorSubject$.value,
             isIframeInstantiated: true,
             nfidIframe,
-            provider: nfidInpageProvider,
-            ethereum: nfidInpageProvider,
           });
           resolve(true);
         },
@@ -81,7 +87,14 @@ export const nfid = {
     });
   },
 
+  /**
+   * @deprecated - use connect() instead
+   */
   async login() {
+    this.connect();
+  },
+
+  async connect() {
     if (!nfidBehaviorSubject$.value.nfidIframe)
       throw new Error('NFID iframe not instantiated');
     showIframe();
@@ -93,6 +106,7 @@ export const nfid = {
         )
       );
       events.subscribe(() => {
+        console.debug('NFID.connect: authenticated');
         nfidBehaviorSubject$.next({
           ...nfidBehaviorSubject$.value,
           isAuthenticated: true,
@@ -106,3 +120,66 @@ export const nfid = {
     console.debug('NFID.disconnect');
   },
 };
+
+export class NFID {
+  public isAuthenticated = false;
+  public isIframeInstantiated = false;
+
+  private nfidIframe?: HTMLIFrameElement;
+
+  constructor(
+    public ic: NFIDIcInpageProvider,
+    public provider: NFIDEthInpageProvider,
+    public nfidOrigin: string
+  ) {
+    this.initIframe(nfidOrigin);
+  }
+
+  async initIframe(origin: string) {
+    return new Promise<boolean>((resolve) => {
+      const nfidIframe = buildIframe({
+        origin,
+        onLoad: () => {
+          this.isIframeInstantiated = true;
+          this.nfidIframe = nfidIframe;
+          resolve(true);
+        },
+      });
+    });
+  }
+
+  static async init({ origin = 'https://nfid.one', rpcUrl }: NFIDConfig) {
+    const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
+    const chainId = (await provider.getNetwork()).chainId;
+    const nfidInpageProvider = new NFIDEthInpageProvider(chainId, provider);
+    const ic = new NFIDIcInpageProvider();
+
+    return new this(ic, nfidInpageProvider, origin);
+  }
+
+  async connect() {
+    console.log('NFID.connect');
+    if (!this.nfidIframe) throw new Error('NFID iframe not instantiated');
+    showIframe();
+    return new Promise<boolean>((resolve) => {
+      const source = fromEvent(window, 'message');
+      const events = source.pipe(
+        first(
+          (event: any) => event.data && event.data.type === 'nfid_authenticated'
+        )
+      );
+      events.subscribe(() => {
+        console.debug('NFID.connect: authenticated');
+        this.isAuthenticated = true;
+        resolve(true);
+      });
+    });
+  }
+
+  /**
+   * Disconnects user from all chains
+   */
+  async disconnect() {
+    this.ic.disconnect();
+  }
+}

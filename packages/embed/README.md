@@ -1,11 +1,15 @@
 # embed
 
-This library was generated with [Nx](https://nx.dev).
+## Initialisation
 
-## Building
+```mermaid
+sequenceDiagram
 
-Run `nx build embed` to build the library.
+    participant A as Client App
+    participant B as nfid
 
-## Running unit tests
-
-Run `nx test embed` to execute the unit tests via [Jest](https://jestjs.io).
+    A->>B: NFID.init()
+    B->>B: creates nfid instance and provider
+    B->>A: nfid instance
+    B->>A: delegationIdentity
+```
