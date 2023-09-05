@@ -159,19 +159,21 @@ export class NFID {
   }
 
   async renewDelegation() {
-    const iframe = getIframe();
-    const sessionKey = Ed25519KeyIdentity.generate();
-    await request(iframe, {
-      method: 'ic_renewDelegation',
-      params: [
-        {
-          sessionPublicKey: new Uint8Array(
-            sessionKey.getPublicKey().toDer() as ArrayBuffer
-          ),
-          maxTimeToLive: BigInt(Date.now() + 6 * 30 * 24 * 60 * 60 * 1e9),
-          targets: ['a', 'b', 'c'],
-        },
-      ],
+    console.log('NFID.renewDelegation');
+    if (!NFID.nfidIframe) throw new Error('NFID iframe not instantiated');
+
+    return new Promise<Identity>((resolve) => {
+      const source = fromEvent(window, 'message');
+      const events = source.pipe(
+        first(
+          (event: any) => event.data && event.data.type === 'nfid_authenticated'
+        )
+      );
+      events.subscribe(async () => {
+        console.debug('NFID.connect: authenticated');
+        const identity = await NFID._authClient.renewDelegation({targets: ['a', 'b', 'c']})
+        resolve(identity);
+      });
     });
   }
 
