@@ -135,6 +135,8 @@ export class NFID {
 
   static nfidIframe?: HTMLIFrameElement;
 
+  constructor(private origin: string) {}
+
   // Move to iFrameManager? Separate class?
   static async initIframe(origin: string) {
     return new Promise<boolean>((resolve) => {
@@ -152,12 +154,13 @@ export class NFID {
   static async init({ origin = 'https://nfid.one' }: NFIDConfig) {
     await NFID.initIframe(origin);
     NFID._authClient = await NfidAuthClient.create();
+    return new this(origin);
   }
 
   async renewDelegation() {
     console.log('NFID.renewDelegation');
     const response = await NFID._authClient.renewDelegation({
-      targets: ['a', 'b', 'c'],
+      targets: ['txkre-oyaaa-aaaap-qa3za-cai'],
     });
     console.debug('NFID.renewDelegation', { response });
     return response;
