@@ -7,6 +7,8 @@ import { ethers } from 'ethers';
 import { NFIDIcInpageProvider } from './inpage-provider/ic';
 import { Identity } from '@dfinity/agent';
 import { NfidAuthClient } from './authentication';
+import { getIframe } from './iframe/get-iframe';
+import { request } from './postmsg-rpc';
 
 type NFIDConfig = {
   origin: string | undefined;
