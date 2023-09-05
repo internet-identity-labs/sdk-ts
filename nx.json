@@ -62,17 +62,6 @@
       "style": "scss",
       "linter": "eslint",
       "unitTestRunner": "jest"
-    },
-    "@nx/react": {
-      "application": {
-        "babel": true
-      }
-    },
-    "@nx/next": {
-      "application": {
-        "style": "none",
-        "linter": "eslint"
-      }
     }
   },
   "defaultProject": "phone-number-verification"
