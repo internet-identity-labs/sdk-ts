@@ -2,16 +2,14 @@ import { IFRAME_ID } from './constants';
 import { getIframe } from './get-iframe';
 
 export const baseStyle: Partial<CSSStyleDeclaration> = {
-  position: 'absolute',
-  top: '75px',
-  right: '10px',
+  position: 'fixed',
+  top: '0',
+  left: '0',
   border: 'none',
-  borderRadius: '0.75rem',
-  width: '440px',
-  height: '580px',
-  zIndex: '10',
-  boxShadow: '0px 0px 60px 0px rgba(48,139,245,0.56)',
-  background: 'white',
+  width: '100%',
+  height: '100%',
+  zIndex: '9999',
+  background: 'rgba(9,10,19,0.5)',
   display: 'none',
 };
 

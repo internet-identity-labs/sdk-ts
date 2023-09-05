@@ -1,6 +1,6 @@
-import { DelegationIdentity } from '@dfinity/identity/lib/cjs/identity/delegation';
 import { Principal } from '@dfinity/principal';
 import * as uuid from 'uuid';
+import { TransferStatus } from './inpage-provider';
 
 export const RPC_BASE = { jsonrpc: '2.0' };
 
@@ -53,6 +53,11 @@ export type NFIDDelegationResult = {
 type MethodToReturnType = {
   ic_getDelegation: {
     result: NFIDDelegationResult;
+  };
+  ic_requestTransfer: {
+    status: TransferStatus;
+    message?: string;
+    hash?: string;
   };
   // Define return types for other methods here
 };

@@ -12,12 +12,25 @@ import { parseDelegation } from '../authentication/parse-delegations';
 export const KEY_STORAGE_KEY = 'identity';
 export const KEY_STORAGE_DELEGATION = 'delegation';
 
-type Method = 'ic_getDelegation' /* add more method names as needed */;
+type Method =
+  | 'ic_getDelegation'
+  | 'ic_requestTransfer' /* add more method names as needed */;
 
 type MethodToReturnType = {
   ic_getDelegation: ResponseParsableDelegation;
+  ic_requestTransfer: {
+    status: TransferStatus;
+    message?: string;
+    blockIndex?: number;
+  };
   // Define return types for other methods here
 };
+
+export enum TransferStatus {
+  'SUCCESS',
+  'ERROR',
+  'REJECTED',
+}
 
 type ParsableDelegation = {
   delegation: {
@@ -50,6 +63,13 @@ export class NFIDIcInpageProvider extends NFIDBaseProvider {
     console.debug('NFIDIcInpageProvider.request', { method, params });
     switch (method) {
       case 'ic_getDelegation': {
+        const meta = {
+          chainId: 'IC',
+          rpcUrl: '',
+        };
+        return this._execRequest(method, params, meta);
+      }
+      case 'ic_requestTransfer': {
         const meta = {
           chainId: 'IC',
           rpcUrl: '',
