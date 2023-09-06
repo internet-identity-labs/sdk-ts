@@ -9,7 +9,6 @@ on:
         required: true
         options:
           - core
-          - credentials
           - embed
           - wallet
           - iframe-auth
