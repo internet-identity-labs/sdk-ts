@@ -55,9 +55,11 @@ type MethodToReturnType = {
     result: NFIDDelegationResult;
   };
   ic_requestTransfer: {
-    status: TransferStatus;
-    message?: string;
-    hash?: string;
+    result: {
+      status: TransferStatus;
+      message?: string;
+      hash?: string;
+    };
   };
   // Define return types for other methods here
 };
