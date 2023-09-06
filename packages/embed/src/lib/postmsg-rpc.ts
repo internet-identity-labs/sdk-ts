@@ -9,8 +9,8 @@ interface RPCBase {
   id: string;
 }
 
-export interface RPCMessage extends RPCBase {
-  method: string;
+export interface RPCMessage<T> extends RPCBase {
+  method: T;
   params: unknown[];
 }
 
@@ -36,7 +36,9 @@ type RPCRequestMetadata = {
   rpcUrl?: string;
 };
 
-type Method = 'ic_getDelegation' /* add more method names as needed */;
+type Method =
+  | 'ic_getDelegation'
+  | 'ic_requestTransfer' /* add more method names as needed */;
 
 export type NFIDDelegationResult = {
   delegations: {
@@ -51,15 +53,15 @@ export type NFIDDelegationResult = {
 };
 
 type MethodToReturnType = {
-  ic_getDelegation: {
-    result: NFIDDelegationResult;
-  };
   ic_requestTransfer: {
     result: {
       status: TransferStatus;
       message?: string;
       hash?: string;
     };
+  };
+  ic_getDelegation: {
+    result: NFIDDelegationResult;
   };
   // Define return types for other methods here
 };
@@ -72,7 +74,7 @@ class ProviderRpcError extends Error {
 
 export async function request<T extends Method>(
   iframe: { contentWindow: Window },
-  { method, params }: Omit<RPCMessage, 'jsonrpc' | 'id'>,
+  { method, params }: Omit<RPCMessage<T>, 'jsonrpc' | 'id'>,
   options: RPCRequestMetadata = {}
 ) {
   const requestId = uuid.v4();
@@ -85,7 +87,7 @@ export async function request<T extends Method>(
   };
   console.debug('request', { ...req });
 
-  return new Promise<MethodToReturnType[T]>((resolve, reject) => {
+  return new Promise<MethodToReturnType[typeof method]>((resolve, reject) => {
     const timeout =
       options.timeout &&
       setTimeout(() => {
