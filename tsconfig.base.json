@@ -16,7 +16,6 @@
     "baseUrl": ".",
     "paths": {
       "@nfid/core": ["packages/core/src/index.ts"],
-      "@nfid/credentials": ["packages/credentials/src/index.ts"],
       "@nfid/embed": ["packages/embed/src/index.ts"],
       "@nfid/wallet": ["packages/wallet/src/index.ts"]
     }
