@@ -38,6 +38,7 @@ type RPCRequestMetadata = {
 
 type Method =
   | 'ic_getDelegation'
+  | 'ic_renewDelegation'
   | 'ic_requestTransfer' /* add more method names as needed */;
 
 export type NFIDDelegationResult = {
@@ -61,6 +62,9 @@ type MethodToReturnType = {
     };
   };
   ic_getDelegation: {
+    result: NFIDDelegationResult;
+  };
+  ic_renewDelegation: {
     result: NFIDDelegationResult;
   };
   // Define return types for other methods here
