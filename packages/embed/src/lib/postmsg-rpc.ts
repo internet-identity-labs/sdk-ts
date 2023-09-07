@@ -36,7 +36,7 @@ type RPCRequestMetadata = {
   rpcUrl?: string;
 };
 
-type Method =
+export type Method =
   | 'ic_getDelegation'
   | 'ic_renewDelegation'
   | 'ic_requestTransfer' /* add more method names as needed */;
