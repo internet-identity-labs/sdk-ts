@@ -56,7 +56,7 @@ type MethodToReturnType = {
   };
   ic_requestTransfer: {
     status: TransferStatus;
-    message?: string;
+    errorMessage?: string;
     hash?: string;
   };
   // Define return types for other methods here
