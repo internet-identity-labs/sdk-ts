@@ -195,7 +195,7 @@ export class NFID {
     return NFID._authClient.logout();
   }
 
-  async requestTransfer({
+  async requestTransferFT({
     receiver,
     amount,
     sourceAddress,
@@ -204,7 +204,7 @@ export class NFID {
     amount: string;
     sourceAddress: string;
   }) {
-    console.log('NFID.requestTransfer');
+    console.log('NFID.requestTransferFT');
     if (!NFID.nfidIframe) throw new Error('NFID iframe not instantiated');
     showIframe();
     const iframe = getIframe();
@@ -214,6 +214,33 @@ export class NFID {
         {
           receiver,
           amount,
+          sourceAddress,
+        },
+      ],
+    });
+    hideIframe();
+    return response.result;
+  }
+
+  async requestTransferNFT({
+    receiver,
+    tokenId,
+    sourceAddress,
+  }: {
+    receiver: string;
+    tokenId: string;
+    sourceAddress: string;
+  }) {
+    console.log('NFID.requestTransferNFT');
+    if (!NFID.nfidIframe) throw new Error('NFID iframe not instantiated');
+    showIframe();
+    const iframe = getIframe();
+    const response = await request(iframe, {
+      method: 'ic_requestTransfer',
+      params: [
+        {
+          receiver,
+          tokenId,
           sourceAddress,
         },
       ],
