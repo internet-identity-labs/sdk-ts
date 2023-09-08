@@ -39,11 +39,12 @@ export class NFIDEthInpageProvider extends NFIDBaseProvider {
       case 'eth_sendTransaction':
       case 'personal_sign':
       case 'eth_accounts': {
-        const meta = {
-          chainId: this.chainId,
-          rpcUrl: this.provider.connection.url,
-        };
-        return this._execRequest(method, params, meta);
+        throw new Error('Method is not implemented');
+        // const meta = {
+        //   chainId: this.chainId,
+        //   rpcUrl: this.provider.connection.url,
+        // };
+        // return this._execRequest(method, params, meta);
       }
       default: {
         console.debug('NFIDInpageProvider.request default', { method, params });

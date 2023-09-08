@@ -1,18 +1,18 @@
 import { getIframe } from '../iframe/get-iframe';
 import { hideIframe, showIframe } from '../iframe/mount-iframe';
-import { request } from '../postmsg-rpc';
+import { Method, request } from '../postmsg-rpc';
 
 export abstract class NFIDBaseProvider {
   abstract request({
     method,
     params,
   }: {
-    method: string;
+    method: Method;
     params: Array<any>;
   }): Promise<any>;
 
   async _execRequest(
-    method: string,
+    method: Method,
     params: Array<any>,
     meta: { chainId: string; rpcUrl: string }
   ): Promise<any> {
