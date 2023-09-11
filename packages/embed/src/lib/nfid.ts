@@ -165,7 +165,7 @@ export class NFID {
     console.debug('NFID.connect');
     if (!NFID.nfidIframe) throw new Error('NFID iframe not instantiated');
     showIframe();
-    return new Promise<Identity>((resolve) => {
+    return new Promise<Identity>((resolve, reject) => {
       const source = fromEvent(window, 'message');
       if (!NFID.isAuthenticated) {
         console.debug('NFID.connect: not authenticated');
@@ -178,16 +178,20 @@ export class NFID {
         events.subscribe(async () => {
           console.debug('NFID.connect: authenticated');
           NFID.isAuthenticated = true;
-          const identity = await NFID._authClient.login(options);
-          resolve(identity);
-          hideIframe();
+          try {
+            const identity = await NFID._authClient.login(options);
+            resolve(identity);
+            hideIframe();
+          } catch(e: any) {
+            reject({error: e.message});
+          }
         });
       } else {
         console.debug('NFID.connect: already authenticated');
         NFID._authClient.login(options).then((identity) => {
           resolve(identity);
           hideIframe();
-        });
+        }).catch(e => reject(({error: e.message})));
       }
     });
   }
@@ -219,6 +223,11 @@ export class NFID {
       ],
     });
     hideIframe();
+
+    if("error" in response) {
+      throw Error(response.error.message)
+    }
+
     return response.result;
   }
 
@@ -246,6 +255,11 @@ export class NFID {
       ],
     });
     hideIframe();
+
+    if("error" in response) {
+      throw Error(response.error.message)
+    }
+
     return response.result;
   }
 
