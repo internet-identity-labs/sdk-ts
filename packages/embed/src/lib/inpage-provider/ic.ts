@@ -19,18 +19,14 @@ type Method =
 type MethodToReturnType = {
   ic_getDelegation: ResponseParsableDelegation;
   ic_requestTransfer: {
-    status: TransferStatus;
-    message?: string;
+    status: ResponseStatus;
+    errorMessage?: string;
     blockIndex?: number;
   };
   // Define return types for other methods here
 };
 
-export enum TransferStatus {
-  'SUCCESS',
-  'ERROR',
-  'REJECTED',
-}
+export type ResponseStatus = 'SUCCESS' | 'ERROR' | 'REJECTED'
 
 type ParsableDelegation = {
   delegation: {
@@ -42,8 +38,12 @@ type ParsableDelegation = {
 };
 
 type ResponseParsableDelegation = {
-  delegations: ParsableDelegation[];
-  userPublicKey: Uint8Array;
+  status: ResponseStatus;
+  errorMessage?: string;
+  authSession?: {
+    delegations: ParsableDelegation[];
+    userPublicKey: Uint8Array;
+  }
 };
 
 export class NFIDIcInpageProvider extends NFIDBaseProvider {
@@ -109,7 +109,12 @@ export class NFIDIcInpageProvider extends NFIDBaseProvider {
         },
       ],
     });
-    const chain = parseDelegation(response);
+
+    if (!response.authSession) {
+      throw new Error("No auth session provided.")
+    }
+
+    const chain = parseDelegation(response.authSession);
 
     this._setCachedDelegation(sessionKey, chain);
 

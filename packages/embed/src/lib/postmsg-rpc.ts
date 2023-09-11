@@ -1,6 +1,6 @@
 import { Principal } from '@dfinity/principal';
 import * as uuid from 'uuid';
-import { TransferStatus } from './inpage-provider';
+import { ResponseStatus } from './inpage-provider';
 
 export const RPC_BASE = { jsonrpc: '2.0' };
 
@@ -41,7 +41,7 @@ export type Method =
   | 'ic_renewDelegation'
   | 'ic_requestTransfer' /* add more method names as needed */;
 
-export type NFIDDelegationResult = {
+export type AuthSession = {
   delegations: {
     delegation: {
       pubkey: Uint8Array;
@@ -51,12 +51,18 @@ export type NFIDDelegationResult = {
     signature: Uint8Array;
   }[];
   userPublicKey: Uint8Array;
+}
+
+export type NFIDDelegationResult = {
+  status: ResponseStatus;
+  errorMessage?: string;
+  authSession?: AuthSession
 };
 
 type MethodToReturnType = {
   ic_requestTransfer: {
     result: {
-      status: TransferStatus;
+      status: ResponseStatus;
       errorMessage?: string;
       hash?: string;
     };

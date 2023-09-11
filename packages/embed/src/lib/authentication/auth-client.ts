@@ -28,7 +28,7 @@ import {
   LocalStorage,
 } from './storage';
 import { getIframe } from '../iframe/get-iframe';
-import { NFIDDelegationResult, request } from '../postmsg-rpc';
+import { AuthSession, request } from '../postmsg-rpc';
 
 const ECDSA_KEY_LABEL = 'ECDSA';
 const ED25519_KEY_LABEL = 'Ed25519';
@@ -241,7 +241,14 @@ export class NfidAuthClient {
         },
       ],
     });
-    return this._handleSuccess(response.result);
+
+    if(response.result.status !== "SUCCESS")
+      throw new Error(response.result.errorMessage)
+
+    if(!response.result.authSession)
+      throw new Error("No auth session was provided.")
+
+    return this._handleSuccess(response.result.authSession);
   }
 
   public async login(options?: {
@@ -277,7 +284,14 @@ export class NfidAuthClient {
         },
       ],
     });
-    return this._handleSuccess(response.result);
+
+    if(response.result.status !== "SUCCESS")
+      throw new Error(response.result.errorMessage)
+
+    if(!response.result.authSession)
+      throw new Error("No auth session was provided.")
+
+    return this._handleSuccess(response.result.authSession);
   }
 
   public async logout(options: { returnTo?: string } = {}): Promise<void> {
@@ -306,8 +320,8 @@ export class NfidAuthClient {
     );
   }
 
-  private async _handleSuccess(nfidDelegationResult: NFIDDelegationResult) {
-    const delegations = nfidDelegationResult.delegations.map(
+  private async _handleSuccess(authSession: AuthSession) {
+    const delegations = authSession.delegations.map(
       (signedDelegation) => {
         return {
           delegation: new Delegation(
@@ -322,7 +336,7 @@ export class NfidAuthClient {
 
     const delegationChain = DelegationChain.fromDelegations(
       delegations,
-      nfidDelegationResult.userPublicKey.buffer as DerEncodedPublicKey
+      authSession.userPublicKey.buffer as DerEncodedPublicKey
     );
 
     const key = this._key;
