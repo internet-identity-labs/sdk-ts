@@ -38,23 +38,24 @@ type RPCRequestMetadata = {
 export type Method =
   | 'ic_getDelegation'
   | 'ic_renewDelegation'
-  | 'ic_requestTransfer' /* add more method names as needed */;
+  | 'ic_requestTransfer'
+  | 'ic_canisterCall' /* add more method names as needed */;
 
 export type MetadataRpcResponse = {
-  id: number,
-  jsonrpc: "2.0"
-}
+  id: number;
+  jsonrpc: '2.0';
+};
 
 export type ErrorRpcResponse = MetadataRpcResponse & {
   error: {
-    code: number,
-    message: string,
-    data: object
-  }
-}
+    code: number;
+    message: string;
+    data: object;
+  };
+};
 
 export type ResultRpcResponse<T> = MetadataRpcResponse & {
-  result: T
+  result: T;
 };
 
 export type NFIDDelegationResult = MetadataRpcResponse & {
@@ -71,14 +72,19 @@ export type NFIDDelegationResult = MetadataRpcResponse & {
 
 export type TransferResponse = {
   hash: string;
-}
+};
 
-export type RpcResponse<T> = ResultRpcResponse<T> | ErrorRpcResponse
+export type CanisterCallResponse = {
+  response: string;
+};
+
+export type RpcResponse<T> = ResultRpcResponse<T> | ErrorRpcResponse;
 
 type MethodToReturnType = {
   ic_requestTransfer: RpcResponse<TransferResponse>;
   ic_getDelegation: RpcResponse<NFIDDelegationResult>;
   ic_renewDelegation: RpcResponse<NFIDDelegationResult>;
+  ic_canisterCall: RpcResponse<CanisterCallResponse>;
   // Define return types for other methods here
 };
 
