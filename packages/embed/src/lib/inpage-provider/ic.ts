@@ -14,17 +14,21 @@ export const KEY_STORAGE_DELEGATION = 'delegation';
 
 type Method =
   | 'ic_getDelegation'
-  | 'ic_requestTransfer' /* add more method names as needed */;
+  | 'ic_requestTransfer'
+  | 'ic_canisterCall'; /* add more method names as needed */
 
 type MethodToReturnType = {
   ic_getDelegation: ResponseParsableDelegation;
   ic_requestTransfer: {
     blockIndex?: number;
   };
+  ic_canisterCall: {
+    response?: string;
+  };
   // Define return types for other methods here
 };
 
-export type ResponseStatus = 'SUCCESS' | 'ERROR' | 'REJECTED'
+export type ResponseStatus = 'SUCCESS' | 'ERROR' | 'REJECTED';
 
 type ParsableDelegation = {
   delegation: {
@@ -39,7 +43,7 @@ type ResponseParsableDelegation = {
   authSession?: {
     delegations: ParsableDelegation[];
     userPublicKey: Uint8Array;
-  }
+  };
 };
 
 export class NFIDIcInpageProvider extends NFIDBaseProvider {
@@ -66,6 +70,13 @@ export class NFIDIcInpageProvider extends NFIDBaseProvider {
         return this._execRequest(method, params, meta);
       }
       case 'ic_requestTransfer': {
+        const meta = {
+          chainId: 'IC',
+          rpcUrl: '',
+        };
+        return this._execRequest(method, params, meta);
+      }
+      case 'ic_canisterCall': {
         const meta = {
           chainId: 'IC',
           rpcUrl: '',
@@ -107,7 +118,7 @@ export class NFIDIcInpageProvider extends NFIDBaseProvider {
     });
 
     if (!response.authSession) {
-      throw new Error("No auth session provided.")
+      throw new Error('No auth session provided.');
     }
 
     const chain = parseDelegation(response.authSession);

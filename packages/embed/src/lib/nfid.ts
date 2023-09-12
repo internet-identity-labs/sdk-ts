@@ -182,16 +182,19 @@ export class NFID {
             const identity = await NFID._authClient.login(options);
             resolve(identity);
             hideIframe();
-          } catch(e: any) {
-            reject({error: e.message});
+          } catch (e: any) {
+            reject({ error: e.message });
           }
         });
       } else {
         console.debug('NFID.connect: already authenticated');
-        NFID._authClient.login(options).then((identity) => {
-          resolve(identity);
-          hideIframe();
-        }).catch(e => reject(({error: e.message})));
+        NFID._authClient
+          .login(options)
+          .then((identity) => {
+            resolve(identity);
+            hideIframe();
+          })
+          .catch((e) => reject({ error: e.message }));
       }
     });
   }
@@ -202,11 +205,9 @@ export class NFID {
   async requestTransferFT({
     receiver,
     amount,
-    sourceAddress,
   }: {
     receiver: string;
     amount: string;
-    sourceAddress: string;
   }) {
     console.log('NFID.requestTransferFT');
     if (!NFID.nfidIframe) throw new Error('NFID iframe not instantiated');
@@ -218,14 +219,13 @@ export class NFID {
         {
           receiver,
           amount,
-          sourceAddress,
         },
       ],
     });
     hideIframe();
 
-    if("error" in response) {
-      throw Error(response.error.message)
+    if ('error' in response) {
+      throw Error(response.error.message);
     }
 
     return response.result;
@@ -234,11 +234,9 @@ export class NFID {
   async requestTransferNFT({
     receiver,
     tokenId,
-    sourceAddress,
   }: {
     receiver: string;
     tokenId: string;
-    sourceAddress: string;
   }) {
     console.log('NFID.requestTransferNFT');
     if (!NFID.nfidIframe) throw new Error('NFID iframe not instantiated');
@@ -250,14 +248,45 @@ export class NFID {
         {
           receiver,
           tokenId,
-          sourceAddress,
         },
       ],
     });
     hideIframe();
 
-    if("error" in response) {
-      throw Error(response.error.message)
+    if ('error' in response) {
+      throw Error(response.error.message);
+    }
+
+    return response.result;
+  }
+
+  async requestCanisterCall({
+    method,
+    canisterId,
+    parameters,
+  }: {
+    method: string;
+    canisterId: string;
+    parameters?: string;
+  }) {
+    console.log('NFID.requestTransferNFT');
+    if (!NFID.nfidIframe) throw new Error('NFID iframe not instantiated');
+    showIframe();
+    const iframe = getIframe();
+    const response = await request(iframe, {
+      method: 'ic_canisterCall',
+      params: [
+        {
+          method,
+          canisterId,
+          parameters,
+        },
+      ],
+    });
+    hideIframe();
+
+    if ('error' in response) {
+      throw Error(response.error.message);
     }
 
     return response.result;
