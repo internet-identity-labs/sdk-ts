@@ -241,6 +241,10 @@ export class NfidAuthClient {
         },
       ],
     });
+
+    if("error" in response)
+      throw new Error(response.error.message)
+
     return this._handleSuccess(response.result);
   }
 
@@ -277,6 +281,10 @@ export class NfidAuthClient {
         },
       ],
     });
+
+    if("error" in response)
+      throw new Error(response.error.message)
+
     return this._handleSuccess(response.result);
   }
 
@@ -306,8 +314,8 @@ export class NfidAuthClient {
     );
   }
 
-  private async _handleSuccess(nfidDelegationResult: NFIDDelegationResult) {
-    const delegations = nfidDelegationResult.delegations.map(
+  private async _handleSuccess(result: NFIDDelegationResult) {
+    const delegations = result.delegations.map(
       (signedDelegation) => {
         return {
           delegation: new Delegation(
@@ -322,7 +330,7 @@ export class NfidAuthClient {
 
     const delegationChain = DelegationChain.fromDelegations(
       delegations,
-      nfidDelegationResult.userPublicKey.buffer as DerEncodedPublicKey
+      result.userPublicKey.buffer as DerEncodedPublicKey
     );
 
     const key = this._key;

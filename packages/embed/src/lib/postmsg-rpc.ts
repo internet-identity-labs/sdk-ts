@@ -1,6 +1,5 @@
 import { Principal } from '@dfinity/principal';
 import * as uuid from 'uuid';
-import { TransferStatus } from './inpage-provider';
 
 export const RPC_BASE = { jsonrpc: '2.0' };
 
@@ -41,7 +40,25 @@ export type Method =
   | 'ic_renewDelegation'
   | 'ic_requestTransfer' /* add more method names as needed */;
 
-export type NFIDDelegationResult = {
+export type MetadataRpcResponse = {
+  id: number,
+  jsonrpc: "2.0"
+}
+
+export type ErrorRpcResponse = MetadataRpcResponse & {
+  error: {
+    code: number,
+    message: string,
+    data: object
+  }
+}
+
+export type ResultRpcResponse<T> = MetadataRpcResponse & {
+  result: T
+};
+
+export type NFIDDelegationResult = MetadataRpcResponse & {
+  userPublicKey: Uint8Array;
   delegations: {
     delegation: {
       pubkey: Uint8Array;
@@ -50,23 +67,18 @@ export type NFIDDelegationResult = {
     };
     signature: Uint8Array;
   }[];
-  userPublicKey: Uint8Array;
 };
 
+export type TransferResponse = {
+  hash: string;
+}
+
+export type RpcResponse<T> = ResultRpcResponse<T> | ErrorRpcResponse
+
 type MethodToReturnType = {
-  ic_requestTransfer: {
-    result: {
-      status: TransferStatus;
-      message?: string;
-      hash?: string;
-    };
-  };
-  ic_getDelegation: {
-    result: NFIDDelegationResult;
-  };
-  ic_renewDelegation: {
-    result: NFIDDelegationResult;
-  };
+  ic_requestTransfer: RpcResponse<TransferResponse>;
+  ic_getDelegation: RpcResponse<NFIDDelegationResult>;
+  ic_renewDelegation: RpcResponse<NFIDDelegationResult>;
   // Define return types for other methods here
 };
 
