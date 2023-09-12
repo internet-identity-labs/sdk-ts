@@ -19,8 +19,6 @@ type Method =
 type MethodToReturnType = {
   ic_getDelegation: ResponseParsableDelegation;
   ic_requestTransfer: {
-    status: ResponseStatus;
-    errorMessage?: string;
     blockIndex?: number;
   };
   // Define return types for other methods here
@@ -38,8 +36,6 @@ type ParsableDelegation = {
 };
 
 type ResponseParsableDelegation = {
-  status: ResponseStatus;
-  errorMessage?: string;
   authSession?: {
     delegations: ParsableDelegation[];
     userPublicKey: Uint8Array;
