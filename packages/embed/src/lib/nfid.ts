@@ -40,21 +40,6 @@ nfidBehaviorSubject$.subscribe({
   },
 });
 
-const initProvider = async (rpcUrl: string) => {
-  const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
-  const chainId = (await provider.getNetwork()).chainId;
-  const nfidInpageProvider = new NFIDEthInpageProvider(chainId, provider);
-  const icInpageProvider = new NFIDIcInpageProvider();
-
-  nfidBehaviorSubject$.next({
-    ...nfidBehaviorSubject$.value,
-    provider: nfidInpageProvider,
-    ic: icInpageProvider,
-  });
-
-  return;
-};
-
 export const nfid = {
   get provider() {
     return nfidBehaviorSubject$.value.provider;
@@ -130,14 +115,17 @@ export class NFID {
 
   static nfidIframe?: HTMLIFrameElement;
 
-  constructor(private origin: string) {}
+  constructor() {
+    console.debug('NFID.constructor', { origin });
+  }
 
-  // Move to iFrameManager? Separate class?
   static async initIframe(origin: string) {
+    console.debug('NFID.initIframe');
     return new Promise<boolean>((resolve) => {
       const nfidIframe = buildIframe({
         origin,
         onLoad: () => {
+          console.debug('NFID.initIframe: iframe loaded');
           NFID.isIframeInstantiated = true;
           NFID.nfidIframe = nfidIframe;
           resolve(true);
@@ -147,9 +135,10 @@ export class NFID {
   }
 
   static async init({ origin = 'https://nfid.one' }: NFIDConfig) {
+    console.debug('NFID.init', { origin });
     await NFID.initIframe(origin);
     NFID._authClient = await NfidAuthClient.create();
-    return new this(origin);
+    return new this();
   }
 
   async renewDelegation({ targets }: { targets: string[] }) {
@@ -157,7 +146,8 @@ export class NFID {
     const response = await NFID._authClient.renewDelegation({
       targets,
     });
-    console.debug('NFID.renewDelegation', { response });
+    if ('error' in response) throw new Error(response.error.message);
+
     return response;
   }
 
@@ -178,23 +168,19 @@ export class NFID {
         events.subscribe(async () => {
           console.debug('NFID.connect: authenticated');
           NFID.isAuthenticated = true;
-          try {
-            const identity = await NFID._authClient.login(options);
-            resolve(identity);
-            hideIframe();
-          } catch (e: any) {
-            reject({ error: e.message });
-          }
+          await NFID._authClient
+            .login(options)
+            .then((identity) => resolve(identity))
+            .catch((e) => reject({ error: e.message }))
+            .finally(hideIframe);
         });
       } else {
         console.debug('NFID.connect: already authenticated');
         NFID._authClient
           .login(options)
-          .then((identity) => {
-            resolve(identity);
-            hideIframe();
-          })
-          .catch((e) => reject({ error: e.message }));
+          .then((identity) => resolve(identity))
+          .catch((e) => reject({ error: e.message }))
+          .finally(hideIframe);
       }
     });
   }
@@ -288,7 +274,6 @@ export class NFID {
     if ('error' in response) {
       throw Error(response.error.message);
     }
-
     return response.result;
   }
 

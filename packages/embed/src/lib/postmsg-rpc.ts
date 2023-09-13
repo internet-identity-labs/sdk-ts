@@ -109,25 +109,27 @@ export async function request<T extends Method>(
   };
   console.debug('request', { ...req });
 
-  return new Promise<MethodToReturnType[typeof method]>((resolve, reject) => {
-    const timeout =
-      options.timeout &&
-      setTimeout(() => {
-        window.removeEventListener('message', handleEvent);
-        reject(new ProviderRpcError('Request timed out', 408));
-      }, options.timeout);
+  return new Promise<MethodToReturnType[typeof method] | RPCErrorResponse>(
+    (resolve, reject) => {
+      const timeout =
+        options.timeout &&
+        setTimeout(() => {
+          window.removeEventListener('message', handleEvent);
+          reject(new ProviderRpcError('Request timed out', 408));
+        }, options.timeout);
 
-    const handleEvent = (event: MessageEvent) => {
-      if (event.data && event.data.id === requestId) {
-        console.debug(`resolve id: ${requestId}`, { event });
-        resolve(event.data);
-        window.removeEventListener('message', handleEvent);
-        timeout && clearTimeout(timeout);
-      }
-    };
+      const handleEvent = (event: MessageEvent) => {
+        if (event.data && event.data.id === requestId) {
+          console.debug(`resolve id: ${requestId}`, { event });
+          resolve(event.data);
+          window.removeEventListener('message', handleEvent);
+          timeout && clearTimeout(timeout);
+        }
+      };
 
-    window.addEventListener('message', handleEvent);
+      window.addEventListener('message', handleEvent);
 
-    iframe.contentWindow.postMessage(req, '*');
-  });
+      iframe.contentWindow.postMessage(req, '*');
+    }
+  );
 }
