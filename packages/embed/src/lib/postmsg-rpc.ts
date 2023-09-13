@@ -64,7 +64,7 @@ export type NFIDDelegationResult = MetadataRpcResponse & {
     delegation: {
       pubkey: Uint8Array;
       expiration: bigint;
-      targets?: Principal[];
+      targets?: string[];
     };
     signature: Uint8Array;
   }[];
@@ -107,7 +107,7 @@ export async function request<T extends Method>(
     params,
     options,
   };
-  console.debug('request', { ...req });
+  console.debug('postmsg-rpc request', { ...req });
 
   return new Promise<MethodToReturnType[typeof method] | RPCErrorResponse>(
     (resolve, reject) => {

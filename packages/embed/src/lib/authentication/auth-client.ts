@@ -29,6 +29,7 @@ import {
 } from './storage';
 import { getIframe } from '../iframe/get-iframe';
 import { NFIDDelegationResult, request } from '../postmsg-rpc';
+import { Principal } from '@dfinity/principal';
 
 const ECDSA_KEY_LABEL = 'ECDSA';
 const ED25519_KEY_LABEL = 'Ed25519';
@@ -295,7 +296,6 @@ export class NfidAuthClient {
     // Reset this auth client to a non-authenticated state.
     this._identity = new AnonymousIdentity();
     this._chain = null;
-    this._key = null;
 
     if (options.returnTo) {
       try {
@@ -322,10 +322,16 @@ export class NfidAuthClient {
         delegation: new Delegation(
           signedDelegation.delegation.pubkey,
           signedDelegation.delegation.expiration,
-          signedDelegation.delegation.targets
+          signedDelegation.delegation.targets?.map((principalId) =>
+            Principal.fromText(principalId)
+          )
         ),
         signature: signedDelegation.signature.buffer as Signature,
       };
+    });
+
+    console.debug('NfidAuthClient._handleSuccess', {
+      delegations,
     });
 
     const delegationChain = DelegationChain.fromDelegations(

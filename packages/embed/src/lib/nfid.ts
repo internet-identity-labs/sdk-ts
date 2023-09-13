@@ -3,7 +3,6 @@ import { first } from 'rxjs/operators';
 import { NFIDEthInpageProvider } from './inpage-provider/eth';
 import { buildIframe } from './iframe/make-iframe';
 import { hideIframe, showIframe } from './iframe/mount-iframe';
-import { ethers } from 'ethers';
 import { NFIDIcInpageProvider } from './inpage-provider/ic';
 import { Identity } from '@dfinity/agent';
 import { NfidAuthClient } from './authentication';
@@ -146,7 +145,7 @@ export class NFID {
     const response = await NFID._authClient.renewDelegation({
       targets,
     });
-    if ('error' in response) throw new Error(response.error.message);
+    if ('error' in response) throw new Error((response as any).error.message);
 
     return response;
   }
