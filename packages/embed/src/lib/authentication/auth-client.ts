@@ -29,6 +29,7 @@ import {
 } from './storage';
 import { getIframe } from '../iframe/get-iframe';
 import { NFIDDelegationResult, request } from '../postmsg-rpc';
+import { Principal } from '@dfinity/principal';
 
 const ECDSA_KEY_LABEL = 'ECDSA';
 const ED25519_KEY_LABEL = 'Ed25519';
@@ -188,7 +189,7 @@ export class NfidAuthClient {
 
   protected constructor(
     private _identity: Identity,
-    private _key: SignIdentity,
+    private _key: SignIdentity | null,
     private _chain: DelegationChain | null,
     private _storage: AuthClientStorage,
     public idleManager: IdleManager | undefined,
@@ -224,6 +225,7 @@ export class NfidAuthClient {
     onSuccess?: (() => void) | (() => Promise<void>);
     targets: string[];
   }) {
+    console.debug('NfidAuthClient.renewDelegation');
     // Set default maxTimeToLive to 8 hours
     const defaultTimeToLive =
       /* hours */ BigInt(8) * /* nanoseconds */ BigInt(3_600_000_000_000);
@@ -241,9 +243,9 @@ export class NfidAuthClient {
         },
       ],
     });
-
-    if("error" in response)
-      throw new Error(response.error.message)
+    if ('error' in response) {
+      throw new Error(response.error.message);
+    }
 
     return this._handleSuccess(response.result);
   }
@@ -282,9 +284,9 @@ export class NfidAuthClient {
       ],
     });
 
-    if("error" in response)
-      throw new Error(response.error.message)
-
+    if ('error' in response) {
+      throw new Error(response.error.message);
+    }
     return this._handleSuccess(response.result);
   }
 
@@ -315,18 +317,22 @@ export class NfidAuthClient {
   }
 
   private async _handleSuccess(result: NFIDDelegationResult) {
-    const delegations = result.delegations.map(
-      (signedDelegation) => {
-        return {
-          delegation: new Delegation(
-            signedDelegation.delegation.pubkey,
-            signedDelegation.delegation.expiration,
-            signedDelegation.delegation.targets
-          ),
-          signature: signedDelegation.signature.buffer as Signature,
-        };
-      }
-    );
+    const delegations = result.delegations.map((signedDelegation) => {
+      return {
+        delegation: new Delegation(
+          signedDelegation.delegation.pubkey,
+          signedDelegation.delegation.expiration,
+          signedDelegation.delegation.targets?.map((principalId) =>
+            Principal.fromText(principalId)
+          )
+        ),
+        signature: signedDelegation.signature.buffer as Signature,
+      };
+    });
+
+    console.debug('NfidAuthClient._handleSuccess', {
+      delegations,
+    });
 
     const delegationChain = DelegationChain.fromDelegations(
       delegations,
