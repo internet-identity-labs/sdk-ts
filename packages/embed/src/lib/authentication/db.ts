@@ -3,13 +3,13 @@ import { isBrowser, KEY_STORAGE_DELEGATION, KEY_STORAGE_KEY } from './storage';
 
 type Database = IDBPDatabase<unknown>;
 type IDBValidKey = string | number | Date | BufferSource | IDBValidKey[];
-const AUTH_DB_NAME = 'auth-client-db';
+const AUTH_DB_NAME = 'nfid-auth-client-db';
 const OBJECT_STORE_NAME = 'ic-keyval';
 
 const _openDbStore = async (
   dbName = AUTH_DB_NAME,
   storeName = OBJECT_STORE_NAME,
-  version: number,
+  version: number
 ) => {
   // Clear legacy stored delegations
   if (isBrowser && localStorage?.getItem(KEY_STORAGE_DELEGATION)) {
@@ -17,7 +17,7 @@ const _openDbStore = async (
     localStorage.removeItem(KEY_STORAGE_KEY);
   }
   return await openDB(dbName, version, {
-    upgrade: database => {
+    upgrade: (database) => {
       database.objectStoreNames;
       if (database.objectStoreNames.contains(storeName)) {
         database.clear(storeName);
@@ -30,7 +30,7 @@ const _openDbStore = async (
 async function _getValue<T>(
   db: Database,
   storeName: string,
-  key: IDBValidKey,
+  key: IDBValidKey
 ): Promise<T | undefined> {
   return await db.get(storeName, key);
 }
@@ -39,12 +39,16 @@ async function _setValue<T>(
   db: Database,
   storeName: string,
   key: IDBValidKey,
-  value: T,
+  value: T
 ): Promise<IDBValidKey> {
   return await db.put(storeName, value, key);
 }
 
-async function _removeValue(db: Database, storeName: string, key: IDBValidKey): Promise<void> {
+async function _removeValue(
+  db: Database,
+  storeName: string,
+  key: IDBValidKey
+): Promise<void> {
   return await db.delete(storeName, key);
 }
 
@@ -70,7 +74,11 @@ export class IdbKeyVal {
    * @constructs an {@link IdbKeyVal}
    */
   public static async create(options?: DBCreateOptions): Promise<IdbKeyVal> {
-    const { dbName = AUTH_DB_NAME, storeName = OBJECT_STORE_NAME, version = 1 } = options ?? {};
+    const {
+      dbName = AUTH_DB_NAME,
+      storeName = OBJECT_STORE_NAME,
+      version = 1,
+    } = options ?? {};
     const db = await _openDbStore(dbName, storeName, version);
     return new IdbKeyVal(db, storeName);
   }

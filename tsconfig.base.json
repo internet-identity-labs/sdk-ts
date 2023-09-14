@@ -16,7 +16,7 @@
     "baseUrl": ".",
     "paths": {
       "@nfid/core": ["packages/core/src/index.ts"],
-      "@nfid/embed": ["packages/embed/src/index.ts"],
+      "@nfid/embed": ["packages/embed/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]
