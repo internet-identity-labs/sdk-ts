@@ -163,25 +163,7 @@ export class NfidAuthClient {
     }
 
     if (!key) {
-      // Create a new key (whether or not one was in storage).
-      if (keyType === ED25519_KEY_LABEL) {
-        key = await Ed25519KeyIdentity.generate();
-        await storage.set(
-          KEY_STORAGE_KEY,
-          JSON.stringify((key as Ed25519KeyIdentity).toJSON())
-        );
-      } else {
-        if (options.storage && keyType === ECDSA_KEY_LABEL) {
-          console.warn(
-            `You are using a custom storage provider that may not support CryptoKey storage. If you are using a custom storage provider that does not support CryptoKey storage, you should use '${ED25519_KEY_LABEL}' as the key type, as it can serialize to a string`
-          );
-        }
-        key = await ECDSAKeyIdentity.generate();
-        await storage.set(
-          KEY_STORAGE_KEY,
-          (key as ECDSAKeyIdentity).getKeyPair()
-        );
-      }
+      key = await getKey(storage, keyType, options.storage);
     }
 
     return new this(identity, key, chain, storage, idleManager, options);
@@ -211,6 +193,14 @@ export class NfidAuthClient {
         location.reload();
       });
     }
+  }
+
+  public async getKey(): Promise<ECDSAKeyIdentity | Ed25519KeyIdentity> {
+    return getKey(
+      this._storage,
+      this._createOptions?.keyType,
+      this._createOptions?.storage
+    );
   }
 
   public async renewDelegation(options?: {
@@ -243,9 +233,8 @@ export class NfidAuthClient {
         },
       ],
     });
-    if ('error' in response) {
-      throw new Error(response.error.message);
-    }
+
+    if ('error' in response) throw new Error(response.error.message);
 
     return this._handleSuccess(response.result);
   }
@@ -266,6 +255,9 @@ export class NfidAuthClient {
      */
     onSuccess?: (() => void) | (() => Promise<void>);
   }): Promise<Identity> {
+    if (!this._key) {
+      this._key = await this.getKey();
+    }
     // Set default maxTimeToLive to 8 hours
     const defaultTimeToLive =
       /* hours */ BigInt(8) * /* nanoseconds */ BigInt(3_600_000_000_000);
@@ -295,6 +287,7 @@ export class NfidAuthClient {
 
     // Reset this auth client to a non-authenticated state.
     this._identity = new AnonymousIdentity();
+    this._key = null;
     this._chain = null;
 
     if (options.returnTo) {
@@ -374,4 +367,31 @@ async function _deleteStorage(storage: AuthClientStorage) {
   await storage.remove(KEY_STORAGE_KEY);
   await storage.remove(KEY_STORAGE_DELEGATION);
   await storage.remove(KEY_VECTOR);
+}
+
+async function getKey(
+  storage: AuthClientStorage,
+  keyType?: BaseKeyType,
+  optionsStorage?: AuthClientStorage
+): Promise<ECDSAKeyIdentity | Ed25519KeyIdentity> {
+  let key;
+
+  // Create a new key (whether or not one was in storage).
+  if (keyType === ED25519_KEY_LABEL) {
+    key = await Ed25519KeyIdentity.generate();
+    await storage.set(
+      KEY_STORAGE_KEY,
+      JSON.stringify((key as Ed25519KeyIdentity).toJSON())
+    );
+  } else {
+    if (optionsStorage && keyType === ECDSA_KEY_LABEL) {
+      console.warn(
+        `You are using a custom storage provider that may not support CryptoKey storage. If you are using a custom storage provider that does not support CryptoKey storage, you should use '${ED25519_KEY_LABEL}' as the key type, as it can serialize to a string`
+      );
+    }
+    key = await ECDSAKeyIdentity.generate();
+    await storage.set(KEY_STORAGE_KEY, (key as ECDSAKeyIdentity).getKeyPair());
+  }
+
+  return key;
 }

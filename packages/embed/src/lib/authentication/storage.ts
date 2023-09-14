@@ -25,7 +25,10 @@ export interface AuthClientStorage {
  * Legacy implementation of AuthClientStorage, for use where IndexedDb is not available
  */
 export class LocalStorage implements AuthClientStorage {
-  constructor(public readonly prefix = 'ic-', private readonly _localStorage?: Storage) {}
+  constructor(
+    public readonly prefix = 'ic-',
+    private readonly _localStorage?: Storage
+  ) {}
 
   public get(key: string): Promise<string | null> {
     return Promise.resolve(this._getLocalStorage().getItem(this.prefix + key));
@@ -73,12 +76,12 @@ export class IdbStorage implements AuthClientStorage {
   // Initializes a KeyVal on first request
   private initializedDb: IdbKeyVal | undefined;
   get _db(): Promise<IdbKeyVal> {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       if (this.initializedDb) {
         resolve(this.initializedDb);
         return;
       }
-      IdbKeyVal.create({ version: DB_VERSION }).then(db => {
+      IdbKeyVal.create({ version: DB_VERSION }).then((db) => {
         this.initializedDb = db;
         resolve(db);
       });
