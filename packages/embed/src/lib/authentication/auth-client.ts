@@ -31,6 +31,11 @@ import { getIframe } from '../iframe/get-iframe';
 import { NFIDDelegationResult, request } from '../postmsg-rpc';
 import { Principal } from '@dfinity/principal';
 
+export enum DelegationType {
+  GLOBAL,
+  ANONYMOUS,
+}
+
 const ECDSA_KEY_LABEL = 'ECDSA';
 const ED25519_KEY_LABEL = 'Ed25519';
 type BaseKeyType = typeof ECDSA_KEY_LABEL | typeof ED25519_KEY_LABEL;
@@ -203,6 +208,13 @@ export class NfidAuthClient {
     );
   }
 
+  public getDelegationType() {
+    console.log(this);
+    return this._chain?.delegations[0].delegation.targets?.length
+      ? DelegationType.GLOBAL
+      : DelegationType.ANONYMOUS;
+  }
+
   public async renewDelegation(options?: {
     /**
      * Expiration of the authentication in nanoseconds
@@ -337,6 +349,7 @@ export class NfidAuthClient {
       throw new Error('missing key');
     }
 
+    console.log({ delegationChain });
     this._chain = delegationChain;
     this._identity = DelegationIdentity.fromDelegation(key, this._chain);
 
