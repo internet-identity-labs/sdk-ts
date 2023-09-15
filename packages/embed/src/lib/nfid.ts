@@ -5,7 +5,7 @@ import { buildIframe } from './iframe/make-iframe';
 import { hideIframe, showIframe } from './iframe/mount-iframe';
 import { NFIDIcInpageProvider } from './inpage-provider/ic';
 import { Identity } from '@dfinity/agent';
-import { NfidAuthClient } from './authentication';
+import { DelegationType, NfidAuthClient } from './authentication';
 import { getIframe } from './iframe/get-iframe';
 import { request } from './postmsg-rpc';
 
@@ -142,6 +142,10 @@ export class NFID {
 
   async renewDelegation({ targets }: { targets: string[] }) {
     console.log('NFID.renewDelegation');
+    const delegationType = NFID._authClient.getDelegationType();
+    if (delegationType === DelegationType.ANONYMOUS)
+      throw new Error('You can not request transfer from anonymous user');
+
     const response = await NFID._authClient.renewDelegation({
       targets,
     });
@@ -195,6 +199,9 @@ export class NFID {
     amount: string;
   }) {
     console.log('NFID.requestTransferFT');
+    const delegationType = NFID._authClient.getDelegationType();
+    if (delegationType === DelegationType.ANONYMOUS)
+      throw new Error('You can not request transfer from anonymous user');
     if (!NFID.nfidIframe) throw new Error('NFID iframe not instantiated');
     showIframe();
     const iframe = getIframe();
@@ -224,6 +231,10 @@ export class NFID {
     tokenId: string;
   }) {
     console.log('NFID.requestTransferNFT');
+    const delegationType = NFID._authClient.getDelegationType();
+    if (delegationType === DelegationType.ANONYMOUS)
+      throw new Error('You can not request transfer from anonymous user');
+
     if (!NFID.nfidIframe) throw new Error('NFID iframe not instantiated');
     showIframe();
     const iframe = getIframe();
@@ -254,7 +265,11 @@ export class NFID {
     canisterId: string;
     parameters?: string;
   }) {
-    console.log('NFID.requestTransferNFT');
+    console.log('NFID.requestCanisterCall');
+    const delegationType = NFID._authClient.getDelegationType();
+    if (delegationType === DelegationType.ANONYMOUS)
+      throw new Error('You can not request transfer from anonymous user');
+
     if (!NFID.nfidIframe) throw new Error('NFID iframe not instantiated');
     showIframe();
     const iframe = getIframe();
