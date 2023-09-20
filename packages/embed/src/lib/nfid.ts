@@ -109,7 +109,6 @@ export const nfid = {
 
 export class NFID {
   static _authClient: NfidAuthClient;
-  static isAuthenticated = false;
   static isIframeInstantiated = false;
 
   static nfidIframe?: HTMLIFrameElement;
@@ -140,7 +139,7 @@ export class NFID {
     return new this();
   }
 
-  async renewDelegation({ targets }: { targets: string[] }) {
+  async updateGlobalDelegation({ targets }: { targets: string[] }) {
     console.log('NFID.renewDelegation');
     const delegationType = NFID._authClient.getDelegationType();
     if (delegationType === DelegationType.ANONYMOUS)
@@ -156,37 +155,18 @@ export class NFID {
 
   async getDelegation(options?: { targets?: string[] }) {
     console.debug('NFID.connect');
-    if (!NFID.nfidIframe) throw new Error('NFID iframe not instantiated');
+    if (!NFID.isIframeInstantiated)
+      throw new Error('NFID iframe not instantiated');
     showIframe();
     return new Promise<Identity>((resolve, reject) => {
-      const source = fromEvent(window, 'message');
-      if (!NFID.isAuthenticated) {
-        console.debug('NFID.connect: not authenticated');
-        const events = source.pipe(
-          first(
-            (event: any) =>
-              event.data && event.data.type === 'nfid_authenticated'
-          )
-        );
-        events.subscribe(async () => {
-          console.debug('NFID.connect: authenticated');
-          NFID.isAuthenticated = true;
-          await NFID._authClient
-            .login(options)
-            .then((identity) => resolve(identity))
-            .catch((e) => reject({ error: e.message }))
-            .finally(hideIframe);
-        });
-      } else {
-        console.debug('NFID.connect: already authenticated');
-        NFID._authClient
-          .login(options)
-          .then((identity) => resolve(identity))
-          .catch((e) => reject({ error: e.message }))
-          .finally(hideIframe);
-      }
+      NFID._authClient
+        .login(options)
+        .then((identity) => resolve(identity))
+        .catch((e) => reject({ error: e.message }))
+        .finally(hideIframe);
     });
   }
+
   async logout() {
     return NFID._authClient.logout();
   }

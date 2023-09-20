@@ -12,7 +12,7 @@ export const mountIframe = async ({ iframe, onLoad }: MountIframeParams) => {
   iframe.onload = onLoad;
 };
 
-export const showIframe = async () => {
+export const showIframe = () => {
   const iframe = getIframe();
   if (!iframe) return;
   console.debug('showIframe', { iframe });
@@ -22,7 +22,7 @@ export const showIframe = async () => {
   });
 };
 
-export const hideIframe = async () => {
+export const hideIframe = () => {
   const iframe = getIframe();
   if (!iframe) return;
   console.debug('hideIframe', { iframe });
