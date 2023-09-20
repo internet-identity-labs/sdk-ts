@@ -155,7 +155,8 @@ export class NFID {
 
   async getDelegation(options?: { targets?: string[] }) {
     console.debug('NFID.connect');
-    if (!NFID.nfidIframe) throw new Error('NFID iframe not instantiated');
+    if (!NFID.isIframeInstantiated)
+      throw new Error('NFID iframe not instantiated');
     showIframe();
     return new Promise<Identity>((resolve, reject) => {
       NFID._authClient
