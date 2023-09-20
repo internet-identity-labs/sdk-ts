@@ -143,7 +143,7 @@ export class NFID {
     console.log('NFID.renewDelegation');
     const delegationType = NFID._authClient.getDelegationType();
     if (delegationType === DelegationType.ANONYMOUS)
-      throw new Error('You can not request transfer from anonymous user');
+      throw new Error('You can not update delegation from anonymous user');
 
     const response = await NFID._authClient.renewDelegation({
       targets,
@@ -165,6 +165,10 @@ export class NFID {
         .catch((e) => reject({ error: e.message }))
         .finally(hideIframe);
     });
+  }
+
+  public getDelegationType() {
+    return NFID._authClient.getDelegationType();
   }
 
   async logout() {
