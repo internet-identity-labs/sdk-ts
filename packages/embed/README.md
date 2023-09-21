@@ -1,15 +1,19 @@
-# embed
+# NFID SDk
 
-## Initialisation
+NFID is a self-custodial identity provider and key management protocol that makes it easy for anyone to make and use multi-chain accounts.
 
-```mermaid
-sequenceDiagram
+`@nfid/embed` is a JavaScript library that allows you to integrate NFID into your dapp.
 
-    participant A as Client App
-    participant B as nfid
+## Installation
 
-    A->>B: NFID.init()
-    B->>B: creates nfid instance and provider
-    B->>A: nfid instance
-    B->>A: delegationIdentity
+```bash
+# npm
+npm install @nfid/embed
+
+# yarn
+yarn add @nfid/embed
 ```
+
+## Docs
+
+Find detailed instructions on how to use the NFID SDK in the [docs](https://docs.nfid.org/). You can also check out our [sample demo implementation](https://hvn26-aiaaa-aaaak-aaa2a-cai.ic0.app/).
