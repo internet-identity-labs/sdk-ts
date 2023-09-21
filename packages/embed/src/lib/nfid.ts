@@ -10,7 +10,7 @@ import { getIframe } from './iframe/get-iframe';
 import { request } from './postmsg-rpc';
 
 type NFIDConfig = {
-  origin: string | undefined;
+  origin?: string;
 };
 
 interface NFIDObservable {
