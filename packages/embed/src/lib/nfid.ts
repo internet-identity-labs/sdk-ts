@@ -10,7 +10,7 @@ import { getIframe } from './iframe/get-iframe';
 import { request } from './postmsg-rpc';
 
 type NFIDConfig = {
-  origin: string | undefined;
+  origin?: string;
 };
 
 interface NFIDObservable {
@@ -185,7 +185,7 @@ export class NFID {
     console.log('NFID.requestTransferFT');
     const delegationType = NFID._authClient.getDelegationType();
     if (delegationType === DelegationType.ANONYMOUS)
-      throw new Error('You can not request transfer from anonymous user');
+      throw new Error('You can not call requestTransferFT from anonymous user');
     if (!NFID.nfidIframe) throw new Error('NFID iframe not instantiated');
     showIframe();
     const iframe = getIframe();
@@ -217,7 +217,9 @@ export class NFID {
     console.log('NFID.requestTransferNFT');
     const delegationType = NFID._authClient.getDelegationType();
     if (delegationType === DelegationType.ANONYMOUS)
-      throw new Error('You can not request transfer from anonymous user');
+      throw new Error(
+        'You can not call requestTransferNFT from anonymous user'
+      );
 
     if (!NFID.nfidIframe) throw new Error('NFID iframe not instantiated');
     showIframe();
@@ -252,7 +254,9 @@ export class NFID {
     console.log('NFID.requestCanisterCall');
     const delegationType = NFID._authClient.getDelegationType();
     if (delegationType === DelegationType.ANONYMOUS)
-      throw new Error('You can not request transfer from anonymous user');
+      throw new Error(
+        'You can not call requestCanisterCall from anonymous user'
+      );
 
     if (!NFID.nfidIframe) throw new Error('NFID iframe not instantiated');
     showIframe();
