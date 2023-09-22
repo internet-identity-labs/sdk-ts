@@ -15,14 +15,33 @@ export const baseStyle: Partial<CSSStyleDeclaration> = {
 
 type BuildIframeArgs = {
   origin: string;
+  applicationName?: string;
+  applicationLogo?: string;
   onLoad: () => void;
 };
 
-export const buildIframe = ({ origin, onLoad }: BuildIframeArgs) => {
-  console.debug('makeIframe');
-  const REQ_ACCOUNTS = 'embed';
+const buildQuery = (params: { [key: string]: string | undefined }) => {
+  console.debug('buildQuery', { params });
+  const keys = Object.keys(params).filter((key) => Boolean(params[key]));
+  return keys.length
+    ? Object.keys(params).reduce((acc, key, index) => {
+        const prefix = index === 0 ? '?' : '&';
+        return `${acc}${prefix}${key}=${params[key]}`;
+      }, '')
+    : '';
+};
 
-  const PROVIDER_URL = new URL(`${origin}/${REQ_ACCOUNTS}`);
+export const buildIframe = ({
+  origin,
+  applicationLogo,
+  applicationName,
+  onLoad,
+}: BuildIframeArgs) => {
+  console.debug('buildIframe');
+  const QUERY = buildQuery({ applicationLogo, applicationName });
+  const PATH = 'embed';
+  const PROVIDER_URL = new URL(`${origin}/${PATH}${QUERY}`);
+  console.debug('buildIframe', { PROVIDER_URL, QUERY, PATH });
 
   let nfidIframe;
   try {
