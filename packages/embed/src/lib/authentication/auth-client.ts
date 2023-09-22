@@ -263,9 +263,10 @@ export class NfidAuthClient {
      */
     targets?: string[];
     /**
-     * Callback once login has completed
+     * Origin for Identity Provider to use while generating the delegated identity. For II, the derivation origin must authorize this origin by setting a record at `<derivation-origin>/.well-known/ii-alternative-origins`.
+     * @see https://github.com/dfinity/internet-identity/blob/main/docs/internet-identity-spec.adoc
      */
-    onSuccess?: (() => void) | (() => Promise<void>);
+    derivationOrigin?: string | URL;
   }): Promise<Identity> {
     if (!this._key) {
       this._key = await this.getKey();
@@ -273,6 +274,9 @@ export class NfidAuthClient {
     // Set default maxTimeToLive to 8 hours
     const defaultTimeToLive =
       /* hours */ BigInt(8) * /* nanoseconds */ BigInt(3_600_000_000_000);
+
+    const targets = options?.targets;
+    const derivationOrigin = options?.derivationOrigin;
 
     const iframe = getIframe();
     const response = await request(iframe, {
@@ -283,7 +287,8 @@ export class NfidAuthClient {
             this._key?.getPublicKey().toDer() as ArrayBuffer
           ),
           maxTimeToLive: options?.maxTimeToLive ?? defaultTimeToLive,
-          ...(options?.targets ? { targets: options.targets } : {}),
+          ...(targets ? { targets } : {}),
+          ...(derivationOrigin ? { derivationOrigin } : {}),
         },
       ],
     });

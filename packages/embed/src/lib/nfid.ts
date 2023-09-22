@@ -57,7 +57,32 @@ export class NFID {
     return response;
   }
 
-  async getDelegation(options?: { targets?: string[] }) {
+  /**
+   * NFID getDelegation -
+   * Opens the nfid iframe to authenticate the user
+   * @param options
+   * @param options.maxTimeToLive Expiration of the authentication in nanoseconds
+   * @param options.derivationOrigin Origin for Identity Provider to use while generating the delegated identity
+   *
+   * @example
+   * const identity = await nfid.getDelegation({
+   *  targets: ['<yourCanisterId>'],
+   *  maxTimeToLive: BigInt (7) * BigInt(24) * BigInt(3_600_000_000_000), // 1 week
+   *  derivationOrigin: 'https://yourdomain.com',
+   * });
+   */
+  async getDelegation(options?: {
+    /**
+     * Target canisterIds
+     * @default  undefined
+     */
+    targets?: string[];
+    /**
+     * Expiration of the authentication session in nanoseconds
+     * @default  BigInt(8) hours * BigInt(3_600_000_000_000) nanoseconds
+     */
+    maxTimeToLive?: bigint;
+  }) {
     console.debug('NFID.connect');
     if (!NFID.isIframeInstantiated)
       throw new Error('NFID iframe not instantiated');
