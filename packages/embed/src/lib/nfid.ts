@@ -33,10 +33,9 @@ export class NFID {
     });
   }
 
-  static async init({
-    origin = 'https://nfid.one',
-    ...nfidConfig
-  }: NFIDConfig) {
+  static async init(params: NFIDConfig) {
+    const { origin = 'https://nfid.one', ...nfidConfig } = params;
+
     console.debug('NFID.init', { origin, ...nfidConfig });
     await NFID.initIframe({ origin, ...nfidConfig });
     NFID._authClient = await NfidAuthClient.create();
@@ -82,6 +81,11 @@ export class NFID {
      * @default  BigInt(8) hours * BigInt(3_600_000_000_000) nanoseconds
      */
     maxTimeToLive?: bigint;
+    /**
+     * Origin for Identity Provider to use while generating the delegated identity. For II, the derivation origin must authorize this origin by setting a record at `<derivation-origin>/.well-known/ii-alternative-origins`.
+     * @see https://github.com/dfinity/internet-identity/blob/main/docs/internet-identity-spec.adoc
+     */
+    derivationOrigin?: string | URL;
   }) {
     console.debug('NFID.connect');
     if (!NFID.isIframeInstantiated)
