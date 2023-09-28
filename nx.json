@@ -3,10 +3,9 @@
   "npmScope": "nfid",
   "tasksRunnerOptions": {
     "default": {
-      "runner": "nx-cloud",
+      "runner": "nx/tasks-runners/default",
       "options": {
-        "cacheableOperations": ["build", "lint", "test", "e2e"],
-        "accessToken": "ZjFjMzk4NDQtYzk4NC00YWEwLWEzNDctZjY5YzBlZmQ5ZjA3fHJlYWQtd3JpdGU="
+        "cacheableOperations": ["build", "lint", "test", "e2e"]
       }
     }
   },
