@@ -218,9 +218,9 @@ export class NfidAuthClient {
   public async renewDelegation(options?: {
     /**
      * Expiration of the authentication in nanoseconds
-     * @default  BigInt(8) hours * BigInt(3_600_000_000) milliseconds
+     * @default  BigInt(8) hours * BigInt(3_600_000_000_000) ns
      */
-    maxTimeToLive?: number;
+    maxTimeToLive?: bigint;
     /**
      * Callback once login has completed
      */
@@ -229,7 +229,8 @@ export class NfidAuthClient {
   }) {
     console.debug('NfidAuthClient.renewDelegation');
     // Set default maxTimeToLive to 8 hours
-    const defaultTimeToLive = 8 /* hours */ * 3_600_000_000; /* miliseconds */
+    const defaultTimeToLive =
+      BigInt(8) /* hours */ * BigInt(3_600_000_000_000); /* nanoseconds */
 
     const iframe = getIframe();
     const response = await request(iframe, {
@@ -253,9 +254,9 @@ export class NfidAuthClient {
   public async login(options?: {
     /**
      * Expiration of the authentication in nanoseconds
-     * @default  8 hours * 3_600_000_000 miliseconds
+     * @default  BigInt(8) h * BigInt(3_600_000_000_000) ns
      */
-    maxTimeToLive?: number;
+    maxTimeToLive?: bigint;
     /**
      * Target canisterIds
      * @default  undefined
@@ -271,7 +272,8 @@ export class NfidAuthClient {
       this._key = await this.getKey();
     }
     // Set default maxTimeToLive to 8 hours
-    const defaultTimeToLive = 8 /* hours */ * 3_600_000_000; /* miliseconds */
+    const defaultTimeToLive =
+      BigInt(8) /* hours */ * BigInt(3_600_000_000_000); /* nanoseconds */
 
     const targets = options?.targets;
     const derivationOrigin = options?.derivationOrigin;
