@@ -284,7 +284,7 @@ export class NfidAuthClient {
       params: [
         {
           sessionPublicKey: new Uint8Array(
-            this._key?.getPublicKey().toDer() as ArrayBuffer
+            this._key.getPublicKey().toDer() as ArrayBuffer
           ),
           maxTimeToLive: options?.maxTimeToLive ?? defaultTimeToLive,
           ...(targets ? { targets } : {}),
@@ -396,7 +396,7 @@ async function getKey(
 
   // Create a new key (whether or not one was in storage).
   if (keyType === ED25519_KEY_LABEL) {
-    key = await Ed25519KeyIdentity.generate();
+    key = Ed25519KeyIdentity.generate();
     await storage.set(
       KEY_STORAGE_KEY,
       JSON.stringify((key as Ed25519KeyIdentity).toJSON())
