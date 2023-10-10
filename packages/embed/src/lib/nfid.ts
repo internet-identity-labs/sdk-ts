@@ -42,49 +42,24 @@ export class NFID {
     return new this({ origin, ...nfidConfig });
   }
 
-  async updateGlobalDelegation({ targets }: { targets: string[] }) {
+  async updateGlobalDelegation(options: {
+    targets: string[];
+    maxTimeToLive?: bigint;
+  }) {
     console.log('NFID.renewDelegation');
     const delegationType = NFID._authClient.getDelegationType();
     if (delegationType === DelegationType.ANONYMOUS)
       throw new Error('You can not update delegation from anonymous user');
 
-    const response = await NFID._authClient.renewDelegation({
-      targets,
-    });
+    const response = await NFID._authClient.renewDelegation(options);
     if ('error' in response) throw new Error((response as any).error.message);
 
     return response;
   }
 
-  /**
-   * NFID getDelegation -
-   * Opens the nfid iframe to authenticate the user
-   * @param options
-   * @param options.maxTimeToLive Expiration of the authentication in nanoseconds
-   * @param options.derivationOrigin Origin for Identity Provider to use while generating the delegated identity
-   *
-   * @example
-   * const identity = await nfid.getDelegation({
-   *  targets: ['<yourCanisterId>'],
-   *  maxTimeToLive: BigInt (7) * BigInt(24) * BigInt(3_600_000_000_000), // 1 week
-   *  derivationOrigin: 'https://yourdomain.com',
-   * });
-   */
   async getDelegation(options?: {
-    /**
-     * Target canisterIds
-     * @default  undefined
-     */
     targets?: string[];
-    /**
-     * Expiration of the authentication session in nanoseconds
-     * @default  BigInt(8) hours * BigInt(3_600_000_000_000) nanoseconds
-     */
     maxTimeToLive?: bigint;
-    /**
-     * Origin for Identity Provider to use while generating the delegated identity. For II, the derivation origin must authorize this origin by setting a record at `<derivation-origin>/.well-known/ii-alternative-origins`.
-     * @see https://github.com/dfinity/internet-identity/blob/main/docs/internet-identity-spec.adoc
-     */
     derivationOrigin?: string | URL;
   }) {
     console.debug('NFID.connect');

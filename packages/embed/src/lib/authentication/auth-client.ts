@@ -218,7 +218,7 @@ export class NfidAuthClient {
   public async renewDelegation(options?: {
     /**
      * Expiration of the authentication in nanoseconds
-     * @default  BigInt(8) hours * BigInt(3_600_000_000_000) nanoseconds
+     * @default  BigInt(8) hours * BigInt(3_600_000_000_000) ns
      */
     maxTimeToLive?: bigint;
     /**
@@ -230,7 +230,7 @@ export class NfidAuthClient {
     console.debug('NfidAuthClient.renewDelegation');
     // Set default maxTimeToLive to 8 hours
     const defaultTimeToLive =
-      /* hours */ BigInt(8) * /* nanoseconds */ BigInt(3_600_000_000_000);
+      BigInt(8) /* hours */ * BigInt(3_600_000_000_000); /* nanoseconds */
 
     const iframe = getIframe();
     const response = await request(iframe, {
@@ -254,7 +254,7 @@ export class NfidAuthClient {
   public async login(options?: {
     /**
      * Expiration of the authentication in nanoseconds
-     * @default  BigInt(8) hours * BigInt(3_600_000_000_000) nanoseconds
+     * @default  BigInt(8) h * BigInt(3_600_000_000_000) ns
      */
     maxTimeToLive?: bigint;
     /**
@@ -273,7 +273,7 @@ export class NfidAuthClient {
     }
     // Set default maxTimeToLive to 8 hours
     const defaultTimeToLive =
-      /* hours */ BigInt(8) * /* nanoseconds */ BigInt(3_600_000_000_000);
+      BigInt(8) /* hours */ * BigInt(3_600_000_000_000); /* nanoseconds */
 
     const targets = options?.targets;
     const derivationOrigin = options?.derivationOrigin;
@@ -284,7 +284,7 @@ export class NfidAuthClient {
       params: [
         {
           sessionPublicKey: new Uint8Array(
-            this._key?.getPublicKey().toDer() as ArrayBuffer
+            this._key.getPublicKey().toDer() as ArrayBuffer
           ),
           maxTimeToLive: options?.maxTimeToLive ?? defaultTimeToLive,
           ...(targets ? { targets } : {}),
@@ -396,7 +396,7 @@ async function getKey(
 
   // Create a new key (whether or not one was in storage).
   if (keyType === ED25519_KEY_LABEL) {
-    key = await Ed25519KeyIdentity.generate();
+    key = Ed25519KeyIdentity.generate();
     await storage.set(
       KEY_STORAGE_KEY,
       JSON.stringify((key as Ed25519KeyIdentity).toJSON())
