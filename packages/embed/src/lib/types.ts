@@ -4,4 +4,7 @@ export type NFIDConfig = {
     name?: string;
     logo?: string;
   };
+  ic?: {
+    derivationOrigin?: string | URL;
+  };
 };
