@@ -24,9 +24,9 @@ export class NFID {
         applicationName: nfidConfig.application?.name,
         applicationLogo: nfidConfig.application?.logo,
         onLoad: () => {
-          console.debug('NFID.initIframe: iframe loaded');
           NFID.isIframeInstantiated = true;
           NFID.nfidIframe = nfidIframe;
+          console.debug('NFID.initIframe: iframe loaded', { nfidIframe });
           resolve(true);
         },
       });
@@ -38,7 +38,9 @@ export class NFID {
 
     console.debug('NFID.init', { origin, ...nfidConfig });
     await NFID.initIframe({ origin, ...nfidConfig });
+    console.debug('NFID.initIframe: iframe initiated');
     NFID._authClient = await NfidAuthClient.create();
+    console.debug('NFID.initIframe: authClient initiated');
     return new this({ origin, ...nfidConfig });
   }
 
