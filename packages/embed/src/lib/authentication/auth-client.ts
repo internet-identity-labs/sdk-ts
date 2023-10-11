@@ -69,7 +69,7 @@ export class NfidAuthClient {
       idleOptions?: IdleOptions;
     } = {}
   ): Promise<NfidAuthClient> {
-    console.log('NfidAuthClient');
+    console.debug('NfidAuthClient.create', { keyType: options.keyType });
     const storage = options.storage ?? new IdbStorage();
     const keyType = options.keyType ?? ECDSA_KEY_LABEL;
 
@@ -392,11 +392,12 @@ async function getKey(
   keyType?: BaseKeyType,
   optionsStorage?: AuthClientStorage
 ): Promise<ECDSAKeyIdentity | Ed25519KeyIdentity> {
+  console.debug('getKey', { keyType });
   let key;
 
   // Create a new key (whether or not one was in storage).
   if (keyType === ED25519_KEY_LABEL) {
-    key = Ed25519KeyIdentity.generate();
+    key = await Ed25519KeyIdentity.generate();
     await storage.set(
       KEY_STORAGE_KEY,
       JSON.stringify((key as Ed25519KeyIdentity).toJSON())
