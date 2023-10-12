@@ -91,7 +91,7 @@ export class NFID {
     const derivationOrigin =
       options?.derivationOrigin || this._nfidConfig?.ic?.derivationOrigin;
 
-    console.log('NFID.renewDelegation');
+    console.debug('NFID.renewDelegation');
     const delegationType = NFID._authClient.getDelegationType();
     if (delegationType === DelegationType.ANONYMOUS)
       throw new Error('You can not update delegation from anonymous user');
@@ -121,7 +121,7 @@ export class NFID {
     amount: string;
     derivationOrigin?: string | URL;
   }) {
-    console.log('NFID.requestTransferFT');
+    console.debug('NFID.requestTransferFT');
     const delegationType = NFID._authClient.getDelegationType();
     if (delegationType === DelegationType.ANONYMOUS)
       throw new Error('You can not call requestTransferFT from anonymous user');
@@ -154,7 +154,7 @@ export class NFID {
     tokenId: string;
     derivationOrigin?: string | URL;
   }) {
-    console.log('NFID.requestTransferNFT');
+    console.debug('NFID.requestTransferNFT');
     const delegationType = NFID._authClient.getDelegationType();
     if (delegationType === DelegationType.ANONYMOUS)
       throw new Error(

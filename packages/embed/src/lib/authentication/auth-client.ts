@@ -215,7 +215,6 @@ export class NfidAuthClient {
    * @returns {DelegationType} The delegation type.
    */
   public getDelegationType() {
-    console.log(this);
     return this._chain?.delegations[0].delegation.targets?.length
       ? DelegationType.GLOBAL
       : DelegationType.ANONYMOUS;
@@ -359,7 +358,6 @@ export class NfidAuthClient {
       throw new Error('missing key');
     }
 
-    console.log({ delegationChain });
     this._chain = delegationChain;
     const delegationIdentity = DelegationIdentity.fromDelegation(
       key,
