@@ -175,7 +175,7 @@ export class NfidAuthClient {
    * @param _createOptions - The AuthClientCreateOptions object or undefined.
    */
   protected constructor(
-    private _identity: Identity,
+    private _identity: DelegationIdentity | AnonymousIdentity,
     private _key: SignIdentity | null,
     private _chain: DelegationChain | null,
     private _storage: AuthClientStorage,
@@ -321,7 +321,7 @@ export class NfidAuthClient {
     }
   }
 
-  public getIdentity(): Identity {
+  public getIdentity(): DelegationIdentity | AnonymousIdentity {
     return this._identity;
   }
 
@@ -361,7 +361,11 @@ export class NfidAuthClient {
 
     console.log({ delegationChain });
     this._chain = delegationChain;
-    this._identity = DelegationIdentity.fromDelegation(key, this._chain);
+    const delegationIdentity = DelegationIdentity.fromDelegation(
+      key,
+      this._chain
+    );
+    this._identity = delegationIdentity;
 
     if (!this.idleManager) {
       const idleOptions = this._createOptions?.idleOptions;
@@ -382,7 +386,7 @@ export class NfidAuthClient {
       );
     }
 
-    return this._identity;
+    return delegationIdentity;
   }
 }
 
