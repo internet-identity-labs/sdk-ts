@@ -201,7 +201,12 @@ export class NFID {
     parameters?: string;
     derivationOrigin?: string | URL;
   }) {
-    console.log('NFID.requestCanisterCall');
+    console.debug('NFID.requestCanisterCall', {
+      method,
+      canisterId,
+      parameters,
+      derivationOrigin,
+    });
     const delegationType = NFID._authClient.getDelegationType();
     if (delegationType === DelegationType.ANONYMOUS)
       throw new Error(
