@@ -128,6 +128,6 @@ export async function request<T extends Method>(
 
     window.addEventListener('message', handleEvent);
 
-    iframe.contentWindow.postMessage(req, '*');
+    iframe.contentWindow.postMessage(req);
   });
 }
