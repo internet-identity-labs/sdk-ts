@@ -43,29 +43,20 @@ type BaseKeyType = typeof ECDSA_KEY_LABEL | typeof ED25519_KEY_LABEL;
 export const ERROR_USER_INTERRUPT = 'UserInterrupt';
 
 export class NfidAuthClient {
+  /**
+   * Creates a new instance of the NfidAuthClient class.
+   * @param options An object containing optional parameters for the authentication client.
+   * @param options.identity An optional identity to use for authentication.
+   * @param options.storage An optional storage mechanism to use for storing authentication data.
+   * @param options.keyType An optional key type to use for authentication.
+   * @param options.idleOptions An optional object containing options for idle management.
+   * @returns A Promise that resolves to a new instance of the NfidAuthClient class.
+   */
   public static async create(
     options: {
-      /**
-       * An {@link Identity} to use as the base.
-       *  By default, a new {@link AnonymousIdentity}
-       */
       identity?: SignIdentity;
-      /**
-       * {@link AuthClientStorage}
-       * @description Optional storage with get, set, and remove. Uses {@link IdbStorage} by default
-       */
       storage?: AuthClientStorage;
-      /**
-       * type to use for the base key
-       * @default 'ECDSA'
-       * If you are using a custom storage provider that does not support CryptoKey storage,
-       * you should use 'Ed25519' as the key type, as it can serialize to a string
-       */
       keyType?: BaseKeyType;
-      /**
-       * Options to handle idle timeouts
-       * @default after 10 minutes, invalidates the identity
-       */
       idleOptions?: IdleOptions;
     } = {}
   ): Promise<NfidAuthClient> {
@@ -174,17 +165,22 @@ export class NfidAuthClient {
     return new this(identity, key, chain, storage, idleManager, options);
   }
 
+  /**
+   * Creates an instance of AuthClient.
+   * @param _identity - The Identity object.
+   * @param _key - The SignIdentity object or null.
+   * @param _chain - The DelegationChain object or null.
+   * @param _storage - The AuthClientStorage object.
+   * @param idleManager - The IdleManager object or undefined.
+   * @param _createOptions - The AuthClientCreateOptions object or undefined.
+   */
   protected constructor(
-    private _identity: Identity,
+    private _identity: DelegationIdentity | AnonymousIdentity,
     private _key: SignIdentity | null,
     private _chain: DelegationChain | null,
     private _storage: AuthClientStorage,
     public idleManager: IdleManager | undefined,
-    private _createOptions: AuthClientCreateOptions | undefined,
-    // A handle on the IdP window.
-    private _idpWindow?: Window,
-    // The event handler for processing events from the IdP.
-    private _eventHandler?: (event: MessageEvent) => void
+    private _createOptions: AuthClientCreateOptions | undefined
   ) {
     const logout = this.logout.bind(this);
     const idleOptions = _createOptions?.idleOptions;
@@ -200,6 +196,10 @@ export class NfidAuthClient {
     }
   }
 
+  /**
+   * Retrieves the authentication key for the client from .
+   * @returns A promise that resolves with an ECDSAKeyIdentity or Ed25519KeyIdentity object.
+   */
   public async getKey(): Promise<ECDSAKeyIdentity | Ed25519KeyIdentity> {
     return getKey(
       this._storage,
@@ -208,24 +208,30 @@ export class NfidAuthClient {
     );
   }
 
+  /**
+   * Returns the delegation type based on the current chain's delegations.
+   * If the chain has at least one target, it is considered a global delegation.
+   * Otherwise, it is considered an anonymous delegation.
+   * @returns {DelegationType} The delegation type.
+   */
   public getDelegationType() {
-    console.log(this);
     return this._chain?.delegations[0].delegation.targets?.length
       ? DelegationType.GLOBAL
       : DelegationType.ANONYMOUS;
   }
 
+  /**
+   * Renews the delegation for the specified targets.
+   * @param options - An optional object containing the following properties:
+   * @param optionsmaxTimeToLive: The maximum time to live for the delegation, in nanoseconds. Defaults to 8 hours.
+   * @param optionstargets: An array of strings representing the targets for which to renew the delegation.
+   * @param optionsderivationOrigin: The derivation origin to use for the delegation.
+   * @returns A Promise that resolves with the result of the renewed delegation.
+   */
   public async renewDelegation(options?: {
-    /**
-     * Expiration of the authentication in nanoseconds
-     * @default  BigInt(8) hours * BigInt(3_600_000_000_000) ns
-     */
     maxTimeToLive?: bigint;
-    /**
-     * Callback once login has completed
-     */
-    onSuccess?: (() => void) | (() => Promise<void>);
     targets: string[];
+    derivationOrigin?: string | URL;
   }) {
     console.debug('NfidAuthClient.renewDelegation');
     // Set default maxTimeToLive to 8 hours
@@ -242,6 +248,7 @@ export class NfidAuthClient {
           ),
           maxTimeToLive: options?.maxTimeToLive ?? defaultTimeToLive,
           targets: options?.targets,
+          derivationOrigin: options?.derivationOrigin,
         },
       ],
     });
@@ -251,21 +258,18 @@ export class NfidAuthClient {
     return this._handleSuccess(response.result);
   }
 
+  /**
+   * Logs in the user and returns an `Identity` object.
+   * @param options An optional object containing login options.
+   * @param options.maxTimeToLive The maximum time to live for the delegated identity.
+   * @param options.targets An array of targets for the delegated identity.
+   * @param options.derivationOrigin The origin for the identity provider to use while generating the delegated identity.
+   * @see https://github.com/dfinity/internet-identity/blob/main/docs/internet-identity-spec.adoc
+   * @returns A Promise that resolves to an `Identity` object.
+   */
   public async login(options?: {
-    /**
-     * Expiration of the authentication in nanoseconds
-     * @default  BigInt(8) h * BigInt(3_600_000_000_000) ns
-     */
     maxTimeToLive?: bigint;
-    /**
-     * Target canisterIds
-     * @default  undefined
-     */
     targets?: string[];
-    /**
-     * Origin for Identity Provider to use while generating the delegated identity. For II, the derivation origin must authorize this origin by setting a record at `<derivation-origin>/.well-known/ii-alternative-origins`.
-     * @see https://github.com/dfinity/internet-identity/blob/main/docs/internet-identity-spec.adoc
-     */
     derivationOrigin?: string | URL;
   }): Promise<Identity> {
     if (!this._key) {
@@ -316,7 +320,7 @@ export class NfidAuthClient {
     }
   }
 
-  public getIdentity(): Identity {
+  public getIdentity(): DelegationIdentity | AnonymousIdentity {
     return this._identity;
   }
 
@@ -354,9 +358,12 @@ export class NfidAuthClient {
       throw new Error('missing key');
     }
 
-    console.log({ delegationChain });
     this._chain = delegationChain;
-    this._identity = DelegationIdentity.fromDelegation(key, this._chain);
+    const delegationIdentity = DelegationIdentity.fromDelegation(
+      key,
+      this._chain
+    );
+    this._identity = delegationIdentity;
 
     if (!this.idleManager) {
       const idleOptions = this._createOptions?.idleOptions;
@@ -377,7 +384,7 @@ export class NfidAuthClient {
       );
     }
 
-    return this._identity;
+    return delegationIdentity;
   }
 }
 

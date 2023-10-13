@@ -38,43 +38,71 @@ export class NFID {
 
     console.debug('NFID.init', { origin, ...nfidConfig });
     await NFID.initIframe({ origin, ...nfidConfig });
-    console.debug('NFID.initIframe: iframe initiated');
+    console.debug('NFID.init iframe initiated');
     NFID._authClient = await NfidAuthClient.create();
-    console.debug('NFID.initIframe: authClient initiated');
+    console.debug('NFID.init authClient initiated');
     return new this({ origin, ...nfidConfig });
   }
 
-  async updateGlobalDelegation(options: {
-    targets: string[];
-    maxTimeToLive?: bigint;
-  }) {
-    console.log('NFID.renewDelegation');
-    const delegationType = NFID._authClient.getDelegationType();
-    if (delegationType === DelegationType.ANONYMOUS)
-      throw new Error('You can not update delegation from anonymous user');
-
-    const response = await NFID._authClient.renewDelegation(options);
-    if ('error' in response) throw new Error((response as any).error.message);
-
-    return response;
-  }
-
+  /**
+   * Retrieves a delegation from the NFID iframe.
+   * @param options An optional object containing the following properties:
+   * @param options.targets An array of target strings.
+   * @param options.targets:
+   * @param options.maxTimeToLive: The maximum time to live as a BigInt.
+   * @param options.derivationOrigin: The derivation origin as a string or URL.
+   * @returns A promise that resolves with an Identity object or rejects with an error object.
+   * @throws An error if the NFID iframe is not instantiated.
+   */
   async getDelegation(options?: {
     targets?: string[];
     maxTimeToLive?: bigint;
     derivationOrigin?: string | URL;
   }) {
     console.debug('NFID.connect');
+    const derivationOrigin =
+      options?.derivationOrigin || this._nfidConfig?.ic?.derivationOrigin;
+
     if (!NFID.isIframeInstantiated)
       throw new Error('NFID iframe not instantiated');
     showIframe();
     return new Promise<Identity>((resolve, reject) => {
       NFID._authClient
-        .login(options)
+        .login({ ...options, derivationOrigin })
         .then((identity) => resolve(identity))
         .catch((e) => reject({ error: e.message }))
         .finally(hideIframe);
     });
+  }
+
+  /**
+   * Updates the global delegation for the current user.
+   * @param options - The options for the delegation update.
+   * @param options.targets - The targets for the delegation update.
+   * @param options.maxTimeToLive - The maximum time to live for the delegation update.
+   * @returns A Promise that resolves with the delegation update response.
+   * @throws Any error that occurs during the delegation update.
+   */
+  async updateGlobalDelegation(options: {
+    targets: string[];
+    maxTimeToLive?: bigint;
+    derivationOrigin?: string | URL;
+  }) {
+    const derivationOrigin =
+      options?.derivationOrigin || this._nfidConfig?.ic?.derivationOrigin;
+
+    console.debug('NFID.renewDelegation');
+    const delegationType = NFID._authClient.getDelegationType();
+    if (delegationType === DelegationType.ANONYMOUS)
+      throw new Error('You can not update delegation from anonymous user');
+
+    const response = await NFID._authClient.renewDelegation({
+      ...options,
+      derivationOrigin,
+    });
+    if ('error' in response) throw new Error((response as any).error.message);
+
+    return response;
   }
 
   public getDelegationType() {
@@ -91,8 +119,9 @@ export class NFID {
   }: {
     receiver: string;
     amount: string;
+    derivationOrigin?: string | URL;
   }) {
-    console.log('NFID.requestTransferFT');
+    console.debug('NFID.requestTransferFT');
     const delegationType = NFID._authClient.getDelegationType();
     if (delegationType === DelegationType.ANONYMOUS)
       throw new Error('You can not call requestTransferFT from anonymous user');
@@ -123,8 +152,9 @@ export class NFID {
   }: {
     receiver: string;
     tokenId: string;
+    derivationOrigin?: string | URL;
   }) {
-    console.log('NFID.requestTransferNFT');
+    console.debug('NFID.requestTransferNFT');
     const delegationType = NFID._authClient.getDelegationType();
     if (delegationType === DelegationType.ANONYMOUS)
       throw new Error(
@@ -152,16 +182,31 @@ export class NFID {
     return response.result;
   }
 
+  /**
+   * Sends a request to a 3rd party canister.
+   * @param method - The method to call on the canister.
+   * @param canisterId - The ID of the canister to call.
+   * @param parameters - Optional parameters to pass to the canister method.
+   * @param derivationOrigin - Optional derivation origin to use for the request.
+   * @returns A Promise that resolves with the result of the canister call.
+   */
   async requestCanisterCall({
     method,
     canisterId,
     parameters,
+    derivationOrigin,
   }: {
     method: string;
     canisterId: string;
     parameters?: string;
+    derivationOrigin?: string | URL;
   }) {
-    console.log('NFID.requestCanisterCall');
+    console.debug('NFID.requestCanisterCall', {
+      method,
+      canisterId,
+      parameters,
+      derivationOrigin,
+    });
     const delegationType = NFID._authClient.getDelegationType();
     if (delegationType === DelegationType.ANONYMOUS)
       throw new Error(
@@ -178,6 +223,8 @@ export class NFID {
           method,
           canisterId,
           parameters,
+          derivationOrigin:
+            derivationOrigin || this._nfidConfig?.ic?.derivationOrigin,
         },
       ],
     });
