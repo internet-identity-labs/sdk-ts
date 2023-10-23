@@ -10,7 +10,7 @@
        "useBuiltIns": "usage"
      }
    ],
-   ["@nrwl/js/babel"]
+   ["@babel/preset-flow"]
   ]
 }
 
