@@ -1,10 +1,17 @@
 {
   "presets": [
     [
-      "@nrwl/js/babel",
-      {
-        "useBuiltIns": "usage"
-      }
-    ]
+     "@babel/preset-env",
+     {
+       "targets": {
+         "ios": "16"
+       },
+       "corejs": 3,
+       "useBuiltIns": "usage"
+     }
+   ],
+   ["@nrwl/js/babel"]
   ]
 }
+
+
