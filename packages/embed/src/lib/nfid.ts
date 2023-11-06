@@ -113,27 +113,31 @@ export class NFID {
     return NFID._authClient.logout();
   }
 
-  async requestTransferFT({
-    receiver,
-    amount,
-  }: {
+  async requestTransferFT(options: {
     receiver: string;
     amount: string;
     derivationOrigin?: string | URL;
   }) {
     console.debug('NFID.requestTransferFT');
+    const derivationOrigin =
+      options?.derivationOrigin || this._nfidConfig?.ic?.derivationOrigin;
+
     const delegationType = NFID._authClient.getDelegationType();
+
     if (delegationType === DelegationType.ANONYMOUS)
       throw new Error('You can not call requestTransferFT from anonymous user');
+
     if (!NFID.nfidIframe) throw new Error('NFID iframe not instantiated');
+
     showIframe();
     const iframe = getIframe();
     const response = await request(iframe, {
       method: 'ic_requestTransfer',
       params: [
         {
-          receiver,
-          amount,
+          receiver: options.receiver,
+          amount: options.amount,
+          derivationOrigin,
         },
       ],
     });
@@ -146,15 +150,15 @@ export class NFID {
     return response.result;
   }
 
-  async requestTransferNFT({
-    receiver,
-    tokenId,
-  }: {
+  async requestTransferNFT(options: {
     receiver: string;
     tokenId: string;
     derivationOrigin?: string | URL;
   }) {
     console.debug('NFID.requestTransferNFT');
+    const derivationOrigin =
+      options?.derivationOrigin || this._nfidConfig?.ic?.derivationOrigin;
+
     const delegationType = NFID._authClient.getDelegationType();
     if (delegationType === DelegationType.ANONYMOUS)
       throw new Error(
@@ -168,8 +172,9 @@ export class NFID {
       method: 'ic_requestTransfer',
       params: [
         {
-          receiver,
-          tokenId,
+          receiver: options.receiver,
+          tokenId: options.tokenId,
+          derivationOrigin,
         },
       ],
     });
