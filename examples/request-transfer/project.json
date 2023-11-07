@@ -52,7 +52,7 @@
       }
     },
     "lint": {
-      "executor": "@nx/linter:eslint",
+      "executor": "@nx/eslint:lint",
       "outputs": ["{options.outputFile}"],
       "options": {
         "lintFilePatterns": ["examples/request-transfer/**/*.ts"]
@@ -60,7 +60,7 @@
     },
     "test": {
       "executor": "@nx/jest:jest",
-      "outputs": ["coverage/examples/request-transfer"],
+      "outputs": ["{workspaceRoot}/coverage/examples/request-transfer"],
       "options": {
         "jestConfig": "examples/request-transfer/jest.config.ts",
         "passWithNoTests": true
