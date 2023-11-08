@@ -60,8 +60,10 @@ jobs:
         run: |
           if [[ ${{ github.event.inputs.level }} == "pre"* ]]; then
             yarn version --${{ github.event.inputs.level }} --preid ${{ github.event.inputs.preid }}
+            NEW_VERSION=$(yarn version --${{ github.event.inputs.level }} --preid ${{ github.event.inputs.preid }} --no-git-tag-version)
           else
             yarn version --${{ github.event.inputs.level }}
+            NEW_VERSION=$(yarn version --${{ github.event.inputs.level }} --no-git-tag-version)
           fi
 
       - name: 🤖 Build
@@ -72,6 +74,19 @@ jobs:
         run: yarn publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.IL_GH_NPM_TOKEN }}
+
+      - name: 📚 Check and create new docs version
+        run: |
+          NEW_DOCS_PATH="apps/docs/versioned_docs/version-${{ env.NEW_VERSION }}"
+          LAST_VERSION=$(ls apps/docs/versioned_docs -1 | sort -V | tail -n 1)
+          LAST_DOCS_PATH="apps/docs/versioned_docs/$LAST_VERSION"
+
+          if [ -d "$NEW_DOCS_PATH" ]; then
+            echo "Docs for version ${{ env.NEW_VERSION }} already exist. Skipping."
+          else
+            echo "Creating new docs version ${{ env.NEW_VERSION }}"
+            cp -r "$LAST_DOCS_PATH" "$NEW_DOCS_PATH"
+          fi
 
       - name: 🎉 Push tags
         run: |
