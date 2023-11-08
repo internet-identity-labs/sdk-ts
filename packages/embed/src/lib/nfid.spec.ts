@@ -23,12 +23,4 @@ describe('NFID', () => {
       expect(NFID.isIframeInstantiated).toBe(true);
     });
   });
-  describe('getDelegation', () => {
-    it('should initialise the iframe', async () => {
-      await NFID.init({ origin: 'https://nfid.one' });
-      expect(NfidAuthClient.create).toHaveBeenCalled();
-      expect(buildIframe).toHaveBeenCalled();
-      expect(NFID.isIframeInstantiated).toBe(true);
-    });
-  });
 });
