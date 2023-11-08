@@ -41,7 +41,9 @@ const config = {
       ({
         docs: {
           // routeBasePath: '/',
+          includeCurrentVersion: false,
           sidebarPath: './sidebars.js',
+
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           // editUrl:
