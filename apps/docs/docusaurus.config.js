@@ -42,14 +42,6 @@ const config = {
         docs: {
           // routeBasePath: '/',
           sidebarPath: './sidebars.js',
-          lastVersion: 'current',
-          versions: {
-            current: {
-              label: '0.10.0-alpha.11',
-              path: '0.10.0-alpha.11',
-            },
-          },
-
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           // editUrl:
