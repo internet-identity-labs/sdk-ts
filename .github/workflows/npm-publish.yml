@@ -55,16 +55,17 @@ jobs:
       - name: 🤖 Install
         run: yarn
 
-      - name: 🤖 Increment package version
+      - name: 🤖 Increment package version and get new version
         working-directory: packages/${{ github.event.inputs.package }}
         run: |
           if [[ ${{ github.event.inputs.level }} == "pre"* ]]; then
             yarn version --${{ github.event.inputs.level }} --preid ${{ github.event.inputs.preid }}
-            NEW_VERSION=$(yarn version --${{ github.event.inputs.level }} --preid ${{ github.event.inputs.preid }} --no-git-tag-version)
           else
             yarn version --${{ github.event.inputs.level }}
-            NEW_VERSION=$(yarn version --${{ github.event.inputs.level }} --no-git-tag-version)
           fi
+          NEW_VERSION=$(node -p "require('./package.json').version")
+          echo "New version is $NEW_VERSION"
+          echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
 
       - name: 🤖 Build
         run: npx nx build ${{ github.event.inputs.package }}
@@ -78,8 +79,7 @@ jobs:
       - name: 📚 Check and create new docs version
         run: |
           NEW_DOCS_PATH="apps/docs/versioned_docs/version-${{ env.NEW_VERSION }}"
-          LAST_VERSION=$(ls apps/docs/versioned_docs -1 | sort -V | tail -n 1)
-          LAST_DOCS_PATH="apps/docs/versioned_docs/$LAST_VERSION"
+          LAST_DOCS_PATH="apps/docs/docs"
 
           if [ -d "$NEW_DOCS_PATH" ]; then
             echo "Docs for version ${{ env.NEW_VERSION }} already exist. Skipping."
