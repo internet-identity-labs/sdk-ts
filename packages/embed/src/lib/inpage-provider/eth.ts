@@ -9,7 +9,6 @@ export interface NFIDInpageProviderObservable {
 
 const supportedChainIds = new Set([
   '0x01', // Ethereum Mainnet
-  '0x05', // Ethereum Goerli Testnet
   '0x89', // Polygon Mainnet
   '0x013881', // Polygon Mumbai Testnet
 ]);
