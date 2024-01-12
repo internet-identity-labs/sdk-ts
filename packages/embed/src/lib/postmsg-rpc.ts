@@ -11,7 +11,7 @@ type RequestTransferParams = {
   receiver: string;
   amount?: string;
   tokenId?: string;
-  memo?: string;
+  memo?: bigint;
   derivationOrigin?: string | URL;
 };
 
