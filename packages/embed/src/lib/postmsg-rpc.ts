@@ -1,4 +1,3 @@
-import { Principal } from '@dfinity/principal';
 import * as uuid from 'uuid';
 
 export const RPC_BASE = { jsonrpc: '2.0' };
@@ -8,9 +7,25 @@ interface RPCBase {
   id: string;
 }
 
-export interface RPCMessage<T> extends RPCBase {
+type RequestTransferParams = {
+  receiver: string;
+  amount?: string;
+  tokenId?: string;
+  memo?: bigint;
+  derivationOrigin?: string | URL;
+};
+
+type MethodParamsType = {
+  ic_requestTransfer: RequestTransferParams | [RequestTransferParams];
+  ic_getDelegation: unknown;
+  ic_renewDelegation: unknown;
+  ic_canisterCall: unknown;
+  // Define param types for other methods here
+};
+
+export interface RPCMessage<T extends keyof MethodParamsType> extends RPCBase {
   method: T;
-  params: unknown[];
+  params: MethodParamsType[T];
 }
 
 interface RPCSuccessResponse extends RPCBase {

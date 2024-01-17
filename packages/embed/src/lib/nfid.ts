@@ -116,6 +116,7 @@ export class NFID {
   async requestTransferFT(options: {
     receiver: string;
     amount: string;
+    memo?: bigint;
     derivationOrigin?: string | URL;
   }) {
     console.debug('NFID.requestTransferFT');
@@ -137,6 +138,7 @@ export class NFID {
         {
           receiver: options.receiver,
           amount: options.amount,
+          memo: options.memo,
           derivationOrigin,
         },
       ],
