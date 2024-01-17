@@ -22,3 +22,4 @@ jobs:
           workflow_file_name: release-dev.yml
           github_token: ${{ secrets.TRIGGER_SDK_PLAYGROUND_PAT }}
           comment_downstream_url: ${{ github.event.head_commit.message }}
+          client_payload: '{ "link_sdk": "true" }'
