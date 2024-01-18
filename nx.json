@@ -10,14 +10,6 @@
       "inputs": ["default", "{workspaceRoot}/.eslintrc.json"],
       "cache": true
     },
-    "test": {
-      "inputs": ["default", "^production", "{workspaceRoot}/jest.preset.js"],
-      "cache": true
-    },
-    "e2e": {
-      "inputs": ["default", "^production"],
-      "cache": true
-    }
   },
   "namedInputs": {
     "default": ["{projectRoot}/**/*", "sharedGlobals"],
@@ -32,7 +24,6 @@
     "sharedGlobals": ["{workspaceRoot}/babel.config.json"]
   },
   "workspaceLayout": {
-    "appsDir": "examples",
     "libsDir": "packages"
   },
   "generators": {
@@ -55,6 +46,5 @@
       "linter": "eslint",
       "unitTestRunner": "jest"
     }
-  },
-  "defaultProject": "phone-number-verification"
+  }
 }

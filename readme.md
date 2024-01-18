@@ -1,4 +1,4 @@
-# NFID Typescript SDK
+# NFID Vault SDK
 
 ## Making Releases
 
