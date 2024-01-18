@@ -10,6 +10,7 @@ on:
         options:
           - core
           - embed
+          - vault
       level:
         type: choice
         description: Select the release update level
