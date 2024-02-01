@@ -3,9 +3,9 @@
   "version": "0.10.0-alpha.14",
   "type": "commonjs",
   "peerDependencies": {
-    "@dfinity/agent": "^0.19.3",
-    "@dfinity/auth-client": "^0.19.3",
-    "@dfinity/identity": "^0.19.3",
-    "@dfinity/principal": "^0.19.3"
+    "@dfinity/agent": "^0.21.4",
+    "@dfinity/auth-client": "^0.21.4",
+    "@dfinity/identity": "^0.21.4",
+    "@dfinity/principal": "^0.21.4"
   }
 }
