@@ -1,6 +1,6 @@
 {
   "name": "@nfid/embed",
-  "version": "0.10.0",
+  "version": "0.10.1-alpha.0",
   "type": "commonjs",
   "peerDependencies": {
     "@dfinity/agent": "^0.21.4",
