@@ -39,7 +39,12 @@ export class NFID {
     console.debug('NFID.init', { origin, ...nfidConfig });
     await NFID.initIframe({ origin, ...nfidConfig });
     console.debug('NFID.init iframe initiated');
-    NFID._authClient = await NfidAuthClient.create();
+    NFID._authClient = await NfidAuthClient.create({
+      identity: nfidConfig.identity,
+      storage: nfidConfig.storage,
+      keyType: nfidConfig.keyType,
+      idleOptions: nfidConfig.idleOptions,
+    });
     console.debug('NFID.init authClient initiated');
     return new this({ origin, ...nfidConfig });
   }

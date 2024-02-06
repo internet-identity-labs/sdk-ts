@@ -60,14 +60,14 @@ export type DBCreateOptions = {
 
 /**
  * Simple Key Value store
- * Defaults to `'auth-client-db'` with an object store of `'ic-keyval'`
+ * Defaults to `'nfid-auth-client-db'` with an object store of `'ic-keyval'`
  */
 export class IdbKeyVal {
   /**
    *
    * @param {DBCreateOptions} options {@link DbCreateOptions}
    * @param {DBCreateOptions['dbName']} options.dbName name for the indexeddb database
-   * @default 'auth-client-db'
+   * @default 'nfid-auth-client-db'
    * @param {DBCreateOptions['storeName']} options.storeName name for the indexeddb Data Store
    * @default 'ic-keyval'
    * @param {DBCreateOptions['version']} options.version version of the database. Increment to safely upgrade
