@@ -22,5 +22,13 @@ describe('NFID', () => {
       expect(buildIframe).toHaveBeenCalled();
       expect(NFID.isIframeInstantiated).toBe(true);
     });
+    it('should initialise with keytype params', async () => {
+      await NFID.init({ origin: 'https://nfid.one', keyType: 'Ed25519' });
+      expect(NfidAuthClient.create).toHaveBeenCalledWith({
+        keyType: 'Ed25519',
+      });
+      expect(buildIframe).toHaveBeenCalled();
+      expect(NFID.isIframeInstantiated).toBe(true);
+    });
   });
 });
