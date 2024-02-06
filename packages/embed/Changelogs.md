@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.11.0
+## 0.10.1-alpha.2
 
 - [Support keyType 'Ed25519'](https://github.com/internet-identity-labs/sdk-ts/pull/55) by @plitzenberger
 
