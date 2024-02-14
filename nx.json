@@ -17,6 +17,15 @@
     "e2e": {
       "inputs": ["default", "^production"],
       "cache": true
+    },
+    "@nx/vite:test": {
+      "cache": true,
+      "inputs": ["default", "^production"]
+    },
+    "@nx/vite:build": {
+      "cache": true,
+      "dependsOn": ["^build"],
+      "inputs": ["production", "^production"]
     }
   },
   "namedInputs": {
@@ -56,5 +65,17 @@
       "unitTestRunner": "jest"
     }
   },
-  "defaultProject": "phone-number-verification"
+  "defaultProject": "phone-number-verification",
+  "plugins": [
+    {
+      "plugin": "@nx/vite/plugin",
+      "options": {
+        "buildTargetName": "build",
+        "previewTargetName": "preview",
+        "testTargetName": "test",
+        "serveTargetName": "serve",
+        "serveStaticTargetName": "serve-static"
+      }
+    }
+  ]
 }
