@@ -404,7 +404,9 @@ async function getKey(
 
   // Create a new key (whether or not one was in storage).
   if (keyType === ED25519_KEY_LABEL) {
-    key = await Ed25519KeyIdentity.generate();
+    //eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    //@ts-ignore
+    key = await Ed25519KeyIdentity.generate(null);
     await storage.set(
       KEY_STORAGE_KEY,
       JSON.stringify((key as Ed25519KeyIdentity).toJSON())

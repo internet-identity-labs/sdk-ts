@@ -104,7 +104,9 @@ export class NFIDIcInpageProvider extends NFIDBaseProvider {
 
     if (delegationIdentity) return delegationIdentity;
 
-    const sessionKey = Ed25519KeyIdentity.generate();
+    //eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    //@ts-ignore
+    const sessionKey = Ed25519KeyIdentity.generate(null);
     const response = await this.request({
       method: 'ic_getDelegation',
       params: [
