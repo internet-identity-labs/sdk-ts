@@ -5,11 +5,12 @@ async function Client() {
     '#getDelegation'
   ) as HTMLButtonElement;
 
+  const nfid = await NFID.init({ origin: 'https://nfid.one' });
 
-  authButton.onclick = async () => {
-    const nfid = await NFID.init({ origin: 'https://nfid.one' });
-    const delegation =  nfid.getDelegation()
-    console.debug('Client.onClick', { delegation });
+  authButton.onclick = () => {
+    nfid.getDelegation().then((delegation) => {
+      console.debug('Client.onClick', { delegation });
+    });
   };
 }
 
