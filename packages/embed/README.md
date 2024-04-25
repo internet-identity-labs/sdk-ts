@@ -1,4 +1,4 @@
-# NFID SDk
+# NFID SDK
 
 NFID is a self-custodial identity provider and key management protocol that makes it easy for anyone to make and use multi-chain accounts.
 
