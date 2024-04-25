@@ -45,6 +45,28 @@ export class NFID {
       keyType: nfidConfig.keyType,
       idleOptions: nfidConfig.idleOptions,
     });
+
+    await new Promise((resolve, reject) => {
+      const removeEventListener = () => {
+        window.removeEventListener('message', handleReadyEvent);
+      }
+      const handleReadyEvent = (event: MessageEvent<{ type: string }>) => {
+        console.debug('NFID.init received event', { event });
+        if (event.data.type === 'nfid_ready') {
+          console.debug('NFID.init received nfid_ready event!');
+          removeEventListener()
+          resolve(true);
+        }
+      };
+
+      setTimeout(() => {
+        removeEventListener()
+        reject(new Error('NFID.init iframe did not respond in time')); 
+      }, 30000);
+      
+      window.addEventListener('message', handleReadyEvent);
+    });
+
     console.debug('NFID.init authClient initiated');
     return new this({ origin, ...nfidConfig });
   }
