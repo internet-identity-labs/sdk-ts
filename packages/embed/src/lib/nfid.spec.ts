@@ -2,15 +2,12 @@ import { NFID } from './nfid';
 import { NfidAuthClient } from './authentication/auth-client';
 import { buildIframe } from './iframe/make-iframe';
 
-const TIMEOUT = 30000;
-const TIMEOUT_DELAY = 1000;
-
 const dispatchNfidReadyEvent = () => {
   setTimeout(() => {
     window.dispatchEvent(new MessageEvent('message', {
       data: { type: 'nfid_ready' },
     }));
-  }, TIMEOUT);
+  }, 0);
 };
 
 jest.mock('./iframe/make-iframe', () => ({
@@ -28,21 +25,23 @@ jest.mock('./authentication/auth-client');
 describe('NFID', () => {
   describe('init', () => {
     it('should initialise the iframe', async () => {
+      const init = NFID.init({ origin: 'https://nfid.one' });
       dispatchNfidReadyEvent();
-      await NFID.init({ origin: 'https://nfid.one' });
+      await init;
       expect(NfidAuthClient.create).toHaveBeenCalled();
       expect(buildIframe).toHaveBeenCalled();
       expect(NFID.isIframeInstantiated).toBe(true);
-    }, TIMEOUT + TIMEOUT_DELAY);
+    });
 
     it('should initialise with keytype params', async () => {
+      const init = NFID.init({ origin: 'https://nfid.one', keyType: 'Ed25519' });
       dispatchNfidReadyEvent();
-      await NFID.init({ origin: 'https://nfid.one', keyType: 'Ed25519' });
+      await init;
       expect(NfidAuthClient.create).toHaveBeenCalledWith({
         keyType: 'Ed25519',
       });
       expect(buildIframe).toHaveBeenCalled();
       expect(NFID.isIframeInstantiated).toBe(true);
-    }, TIMEOUT + TIMEOUT_DELAY);
+    });
   });
 });
