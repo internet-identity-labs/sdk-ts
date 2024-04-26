@@ -40,19 +40,20 @@ export class NFID {
       const removeEventListener = () => {
         window.removeEventListener('message', handleReadyEvent);
       }
+      const timeout = setTimeout(() => {
+        removeEventListener()
+        reject(new Error('NFID.init iframe did not respond in time'));
+      }, 30000);
+
       const handleReadyEvent = (event: MessageEvent<{ type: string }>) => {
         if (event.data.type === 'nfid_ready') {
-          console.debug('NFID.init received nfid_ready event!');
           removeEventListener()
           console.debug('NFID.init authClient initiated');
+          clearTimeout(timeout);
           resolve(new this({ origin, ...nfidConfig }));
         }
       };
 
-      setTimeout(() => {
-        removeEventListener()
-        reject(new Error('NFID.init iframe did not respond in time'));
-      }, 30000);
 
       window.addEventListener('message', handleReadyEvent);
 
