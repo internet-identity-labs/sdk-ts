@@ -36,17 +36,39 @@ export class NFID {
   static async init(params: NFIDConfig) {
     const { origin = 'https://nfid.one', ...nfidConfig } = params;
 
-    console.debug('NFID.init', { origin, ...nfidConfig });
-    await NFID.initIframe({ origin, ...nfidConfig });
-    console.debug('NFID.init iframe initiated');
-    NFID._authClient = await NfidAuthClient.create({
-      identity: nfidConfig.identity,
-      storage: nfidConfig.storage,
-      keyType: nfidConfig.keyType,
-      idleOptions: nfidConfig.idleOptions,
+    return await new Promise<NFID>((resolve, reject) => {
+      const removeEventListener = () => {
+        window.removeEventListener('message', handleReadyEvent);
+      }
+      const handleReadyEvent = (event: MessageEvent<{ type: string }>) => {
+        if (event.data.type === 'nfid_ready') {
+          console.debug('NFID.init received nfid_ready event!');
+          removeEventListener()
+          console.debug('NFID.init authClient initiated');
+          resolve(new this({ origin, ...nfidConfig }));
+        }
+      };
+
+      setTimeout(() => {
+        removeEventListener()
+        reject(new Error('NFID.init iframe did not respond in time'));
+      }, 30000);
+
+      window.addEventListener('message', handleReadyEvent);
+
+      console.debug('NFID.init', { origin, ...nfidConfig });
+      NFID.initIframe({ origin, ...nfidConfig });
+      console.debug('NFID.init iframe initiated');
+      NfidAuthClient.create({
+        identity: nfidConfig.identity,
+        storage: nfidConfig.storage,
+        keyType: nfidConfig.keyType,
+        idleOptions: nfidConfig.idleOptions,
+      }).then((client) => {
+        NFID._authClient = client
+      });
     });
-    console.debug('NFID.init authClient initiated');
-    return new this({ origin, ...nfidConfig });
+
   }
 
   /**
