@@ -76,14 +76,14 @@ jobs:
         run: npx nx build ${{ github.event.inputs.package }}
 
       - name: 📦 Publish package to NPM registry
-        if: ${{ github.event.inputs.package == 'npm' }}
+        if: ${{ github.event.inputs.registry == 'npm' }}
         working-directory: dist/packages/${{ github.event.inputs.package }}
         run: yarn publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.IL_GH_NPM_TOKEN }}
 
       - name: 📦 Publish package to github-packages registry
-        if: ${{ github.event.inputs.package == 'github-packages' }}
+        if: ${{ github.event.inputs.registry == 'github-packages' }}
         working-directory: dist/packages/${{ github.event.inputs.package }}
         run: |
           echo "@nfid:registry=https://npm.pkg.github.com" >> .npmrc
