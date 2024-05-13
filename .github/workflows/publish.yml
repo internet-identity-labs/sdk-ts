@@ -41,6 +41,9 @@ on:
 jobs:
   release:
     runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -86,7 +89,8 @@ jobs:
         if: ${{ github.event.inputs.registry == 'github-packages' }}
         working-directory: dist/packages/${{ github.event.inputs.package }}
         run: |
-          echo "@nfid:registry=https://npm.pkg.github.com" >> .npmrc
+          npm pkg set 'name'='@internet-identity-labs/${{ github.event.inputs.package }}'      
+          echo "registry=https://npm.pkg.github.com" >> .npmrc
           echo "//npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}" >> .npmrc
           yarn publish --access public
         env:
