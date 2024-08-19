@@ -17,7 +17,7 @@ jobs:
         uses: convictional/trigger-workflow-and-wait@v1.6.5
         with:
           owner: internet-identity-labs
-          repo: nfid-frontend
+          repo: nfid-wallet-client
           workflow_file_name: sdk-test.yml
           github_token: ${{ secrets.TRIGGER_SDK_PLAYGROUND_PAT }}
           comment_downstream_url: ${{ github.event.head_commit.message }}
